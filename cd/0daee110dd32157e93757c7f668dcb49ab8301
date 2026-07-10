@@ -1,0 +1,25 @@
+src/components/Settings/LlmPane.tsx
+  s_e06b0c2cc8f2e4::t_09870aa290564a 6-10,43,106-125,281-295
+src/components/Settings/__tests__/LlmPane.test.tsx
+  s_e06b0c2cc8f2e4::t_fe42d51f846c22 27-29,72,131,338-367
+src/i18n/locales/zh.json
+  s_e06b0c2cc8f2e4::t_09870aa290564a 317-319
+src/i18n/locales/en.json
+  s_e06b0c2cc8f2e4::t_09870aa290564a 317-319
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "cd0daee110dd32157e93757c7f668dcb49ab8301",
+  "prompts": {},
+  "sessions": {
+    "s_e06b0c2cc8f2e4": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4af0-a16a-79c0-9589-a7e5c0e645e6",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "YidaHu <huyidada@gmail.com>"
+    }
+  }
+}
