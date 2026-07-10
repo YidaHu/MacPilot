@@ -1,0 +1,25 @@
+docs/superpowers/plans/2026-07-10-structured-dictation-mode.md
+  s_e06b0c2cc8f2e4::t_62596ed64220d6 1-297,299-323,331-335,349-375,383-384,386-437,447,449-451,453,476-614,616-629,631-911
+  s_e06b0c2cc8f2e4::t_022342db640803 324-330,377,439-446,448
+  s_e06b0c2cc8f2e4::t_aa38f3aee2d2bc 376,378,381-382,615,630
+  s_e06b0c2cc8f2e4::t_2e5aec89cfdbba 452,454-475
+  s_e06b0c2cc8f2e4::t_1e8c4619dd6256 298,336-348,379-380,385,438
+docs/superpowers/specs/2026-07-10-structured-dictation-mode-design.md
+  s_e06b0c2cc8f2e4::t_379170bd088251 90,156,184
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "c6ea594cebc20874e1df538d410ffbfac5267418",
+  "prompts": {},
+  "sessions": {
+    "s_e06b0c2cc8f2e4": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4af0-a16a-79c0-9589-a7e5c0e645e6",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "YidaHu <huyidada@gmail.com>"
+    }
+  }
+}
