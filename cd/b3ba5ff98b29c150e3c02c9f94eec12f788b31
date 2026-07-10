@@ -1,0 +1,22 @@
+src-tauri/src/llm/prompt.rs
+  s_e06b0c2cc8f2e4::t_8c67e82caf0bdb 90-92
+src-tauri/src/pipeline.rs
+  s_e06b0c2cc8f2e4::t_9e842b3acb0b5a 1473,1493,1512
+  s_e06b0c2cc8f2e4::t_8c67e82caf0bdb 349-358,1468,1475-1476,1488,1495-1496,1510-1511,1513-1519
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "cdb3ba5ff98b29c150e3c02c9f94eec12f788b31",
+  "prompts": {},
+  "sessions": {
+    "s_e06b0c2cc8f2e4": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4af0-a16a-79c0-9589-a7e5c0e645e6",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "YidaHu <huyidada@gmail.com>"
+    }
+  }
+}
