@@ -1,0 +1,33 @@
+src-tauri/src/llm/cloud.rs
+  s_e06b0c2cc8f2e4::t_d55f7fe4f721f2 10-20,200-206,209,211-212,219,297-300,312-313
+  s_e06b0c2cc8f2e4::t_56e98eb59ede07 314-315
+src-tauri/src/pipeline.rs
+  s_e06b0c2cc8f2e4::t_340169831c2683 1798-1834
+  s_e06b0c2cc8f2e4::t_9ffdb7097ec709 1344-1345,1349-1357,1364,1405-1421,1423-1468,1471-1474,1476-1490,1494,1497-1523
+  s_e06b0c2cc8f2e4::t_398d4847f7b2d7 213-223,349-450
+  s_e06b0c2cc8f2e4::t_7b6f9973b66f8a 1224,1235,1268,1332,1343
+src-tauri/src/error.rs
+  s_e06b0c2cc8f2e4::t_84c735e48cf3aa 24-25,35,39,59-66,93-96
+  s_e06b0c2cc8f2e4::t_340169831c2683 200-213
+src-tauri/src/llm/openai.rs
+  s_e06b0c2cc8f2e4::t_f69fedad440b34 9-19,123-129,132,134-135,142,246,265
+  s_e06b0c2cc8f2e4::t_340169831c2683 278-295
+src-tauri/src/commands/config.rs
+  s_e06b0c2cc8f2e4::t_a0103e04c8f4a1 78
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "36a8e2b4510d2f73939ee96406441669cad395e8",
+  "prompts": {},
+  "sessions": {
+    "s_e06b0c2cc8f2e4": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4af0-a16a-79c0-9589-a7e5c0e645e6",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "YidaHu <huyidada@gmail.com>"
+    }
+  }
+}
