@@ -1,0 +1,32 @@
+src/stores/appStore.ts
+  s_e06b0c2cc8f2e4::t_a041d47b9c3d72 73,200
+src/lib/tauri.ts
+  s_e06b0c2cc8f2e4::t_a041d47b9c3d72 31-34
+src/stores/__tests__/appStore.test.ts
+  s_e06b0c2cc8f2e4::t_e1be4204de36eb 34
+src-tauri/src/commands/config.rs
+  s_e06b0c2cc8f2e4::t_a041d47b9c3d72 78-109
+  s_e06b0c2cc8f2e4::t_e1be4204de36eb 154-181
+src-tauri/src/storage/mod.rs
+  s_e06b0c2cc8f2e4::t_a041d47b9c3d72 24,60
+  s_e06b0c2cc8f2e4::t_e1be4204de36eb 430-440
+  s_e06b0c2cc8f2e4::t_47fa11560c5676 429
+src-tauri/src/lib.rs
+  s_e06b0c2cc8f2e4::t_a041d47b9c3d72 612
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "f109d4521c00c8046e64e385f276475977f52e38",
+  "prompts": {},
+  "sessions": {
+    "s_e06b0c2cc8f2e4": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4af0-a16a-79c0-9589-a7e5c0e645e6",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "YidaHu <huyidada@gmail.com>"
+    }
+  }
+}
