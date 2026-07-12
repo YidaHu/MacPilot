@@ -9,6 +9,7 @@ struct RootPanelView: View {
     @ObservedObject var calendar: CalendarReminderController
     @ObservedObject var fans: FanStore
     @ObservedObject var tools: SystemToolsStore
+    @ObservedObject var voice: VoiceStore
     let cleaning: CleaningOverlayController
     let openSettings: () -> Void
     @State private var selectedTab: DashboardTab = .overview
@@ -33,7 +34,7 @@ struct RootPanelView: View {
                 case .tools:
                     ToolsView(calendar: calendar, tools: tools, cleaning: cleaning)
                 case .voice:
-                    VoicePlaceholderView()
+                    VoiceView(store: voice)
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)

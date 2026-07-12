@@ -4,6 +4,7 @@ import MacPilotCore
 import MacPilotFan
 import MacPilotMetrics
 import MacPilotSystemActions
+import MacPilotVoice
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private var store: AppStore?
@@ -14,6 +15,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var fanStore: FanStore?
     private var toolsStore: SystemToolsStore?
     private var cleaningController: CleaningOverlayController?
+    private var voiceStore: VoiceStore?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         Task { @MainActor [weak self] in
@@ -26,6 +28,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             self?.menuBarController?.stopRefreshing()
             self?.cleaningController?.stop()
             await self?.toolsStore?.shutdown()
+            self?.voiceStore?.shutdown()
         }
     }
 
@@ -37,6 +40,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         fans.refresh()
         let tools = SystemToolsStore()
         let cleaning = CleaningOverlayController()
+        let voice = VoiceStore()
         let monitor = EventKitCalendarMonitor()
         let rocket = RocketOverlayWindow()
         let reminderStoreURL = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
@@ -55,8 +59,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             testAction: { rocket.presentRocket() },
             enabledDidChange: { UserDefaults.standard.set($0, forKey: "rocketReminderEnabled") }
         )
-        let settings = SettingsWindowController(calendar: calendar, fans: fans, tools: tools)
-        let menuBar = MenuBarController(store: store, calendar: calendar, fans: fans, tools: tools, cleaning: cleaning) {
+        let settings = SettingsWindowController(calendar: calendar, fans: fans, tools: tools, voice: voice)
+        let menuBar = MenuBarController(store: store, calendar: calendar, fans: fans, tools: tools, voice: voice, cleaning: cleaning) {
             settings.show()
         }
         self.store = store
@@ -67,6 +71,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         fanStore = fans
         toolsStore = tools
         cleaningController = cleaning
+        voiceStore = voice
         menuBar.startRefreshing()
         NSWorkspace.shared.notificationCenter.addObserver(
             self,

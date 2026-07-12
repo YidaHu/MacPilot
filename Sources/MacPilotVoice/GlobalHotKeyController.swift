@@ -23,6 +23,8 @@ public struct HotKeyInteractionState: Equatable, Sendable {
             return recording ? .startRecording : .stopRecording
         }
     }
+
+    public mutating func reset() { recording = false }
 }
 
 public enum HotKeyError: Error, Equatable {
@@ -112,6 +114,8 @@ public final class GlobalHotKeyController {
         hotKeyRef = nil
         eventHandlerRef = nil
     }
+
+    public func resetInteraction() { interaction.reset() }
 
     fileprivate func handle(kind: UInt32) {
         let event: HotKeyEvent = kind == UInt32(kEventHotKeyPressed) ? .pressed : .released

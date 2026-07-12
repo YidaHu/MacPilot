@@ -26,7 +26,7 @@ let package = Package(
         .executableTarget(name: "MacPilotFanRecovery", dependencies: ["MacPilotFan"]),
         .executableTarget(
             name: "MacPilotApp",
-            dependencies: ["MacPilotCore", "MacPilotMetrics", "MacPilotSystemActions", "MacPilotCalendar", "MacPilotFan"]
+            dependencies: ["MacPilotCore", "MacPilotMetrics", "MacPilotSystemActions", "MacPilotCalendar", "MacPilotFan", "MacPilotVoice"]
         ),
         .testTarget(name: "MacPilotCoreTests", dependencies: ["MacPilotCore"]),
         .testTarget(name: "MacPilotMetricsTests", dependencies: ["MacPilotMetrics"]),

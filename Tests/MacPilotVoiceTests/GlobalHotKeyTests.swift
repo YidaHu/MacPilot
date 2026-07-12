@@ -2,6 +2,12 @@ import XCTest
 @testable import MacPilotVoice
 
 final class GlobalHotKeyTests: XCTestCase {
+    func testResetMakesNextToggleActionStartAgain() {
+        var state = HotKeyInteractionState(mode: .toggle)
+        XCTAssertEqual(state.handle(.pressed), .startRecording)
+        state.reset()
+        XCTAssertEqual(state.handle(.pressed), .startRecording)
+    }
     func testParsesLegacyOptionSlashShortcut() throws {
         let descriptor = try HotKeyDescriptor.parse("Option+/")
         XCTAssertEqual(descriptor.keyCode, 44)

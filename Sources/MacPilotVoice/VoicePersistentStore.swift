@@ -50,6 +50,18 @@ public final class VoicePersistentStore: @unchecked Sendable {
         }
     }
 
+    public func saveHistory(_ entry: VoiceHistoryEntry) throws {
+        try perform {
+            let object = NSEntityDescription.insertNewObject(forEntityName: "HistoryEntry", into: container.viewContext)
+            object.setValue(entry.id, forKey: "id")
+            object.setValue(entry.createdAt, forKey: "createdAt")
+            object.setValue(entry.rawText, forKey: "rawText")
+            object.setValue(entry.polishedText, forKey: "polishedText")
+            object.setValue(entry.duration, forKey: "duration")
+            try container.viewContext.save()
+        }
+    }
+
     public func dictionary() throws -> [VoiceDictionaryEntry] {
         try perform {
             let request = NSFetchRequest<NSManagedObject>(entityName: "DictionaryEntry")
@@ -139,5 +151,11 @@ public final class VoicePersistentStore: @unchecked Sendable {
 
     private static func attribute(_ name: String, _ type: NSAttributeType, optional: Bool) -> NSAttributeDescription {
         let attribute = NSAttributeDescription(); attribute.name = name; attribute.attributeType = type; attribute.isOptional = optional; return attribute
+    }
+}
+
+extension VoicePersistentStore: VoiceHistoryStoring {
+    public func save(_ entry: VoiceHistoryEntry) async throws {
+        try saveHistory(entry)
     }
 }

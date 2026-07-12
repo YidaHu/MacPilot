@@ -14,7 +14,7 @@ final class MenuBarController: NSObject, NSPopoverDelegate {
     private let openSettings: () -> Void
     private var refreshTask: Task<Void, Never>?
 
-    init(store: AppStore, calendar: CalendarReminderController, fans: FanStore, tools: SystemToolsStore, cleaning: CleaningOverlayController, openSettings: @escaping () -> Void) {
+    init(store: AppStore, calendar: CalendarReminderController, fans: FanStore, tools: SystemToolsStore, voice: VoiceStore, cleaning: CleaningOverlayController, openSettings: @escaping () -> Void) {
         self.store = store
         self.fans = fans
         self.openSettings = openSettings
@@ -33,7 +33,7 @@ final class MenuBarController: NSObject, NSPopoverDelegate {
         popover.delegate = self
         popover.contentSize = NSSize(width: 430, height: 660)
         popover.contentViewController = NSHostingController(
-            rootView: RootPanelView(store: store, calendar: calendar, fans: fans, tools: tools, cleaning: cleaning, openSettings: openSettings)
+            rootView: RootPanelView(store: store, calendar: calendar, fans: fans, tools: tools, voice: voice, cleaning: cleaning, openSettings: openSettings)
         )
     }
 

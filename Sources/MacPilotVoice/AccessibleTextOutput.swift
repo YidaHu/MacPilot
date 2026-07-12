@@ -59,25 +59,31 @@ public final class AccessibleTextOutput: @unchecked Sendable, TextOutputting {
     }
 
     public func output(_ text: String) async throws {
-        guard accessibility.isTrusted(prompt: true) else {
+        guard await MainActor.run(body: { accessibility.isTrusted(prompt: true) }) else {
             throw AccessibleTextOutputError.accessibilityPermissionRequired
         }
 
-        let previous = pasteboard.snapshot()
-        let ownedChangeCount = try pasteboard.writeText(text)
+        let (previous, ownedChangeCount) = try await MainActor.run {
+            let previous = pasteboard.snapshot()
+            return (previous, try pasteboard.writeText(text))
+        }
         do {
-            try keyPoster.postPaste()
+            try await MainActor.run { try keyPoster.postPaste() }
             if restoreDelayNanoseconds > 0 {
                 try await Task.sleep(nanoseconds: restoreDelayNanoseconds)
             }
         } catch {
-            if pasteboard.changeCount == ownedChangeCount { try? pasteboard.restore(previous) }
+            await MainActor.run {
+                if pasteboard.changeCount == ownedChangeCount { try? pasteboard.restore(previous) }
+            }
             throw error
         }
 
         // Do not overwrite clipboard content copied by the user while output was in flight.
-        if pasteboard.changeCount == ownedChangeCount {
-            try pasteboard.restore(previous)
+        try await MainActor.run {
+            if pasteboard.changeCount == ownedChangeCount {
+                try pasteboard.restore(previous)
+            }
         }
     }
 }
