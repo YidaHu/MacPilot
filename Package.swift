@@ -14,6 +14,7 @@ let package = Package(
         .target(name: "MacPilotSystemActions", dependencies: ["MacPilotCore"]),
         .target(name: "MacPilotCalendar", dependencies: ["MacPilotCore"]),
         .target(name: "MacPilotFan"),
+        .target(name: "MacPilotFanHelper", dependencies: ["MacPilotFan"]),
         .executableTarget(name: "MacPilotFanDiagnostic", dependencies: ["MacPilotFan"]),
         .executableTarget(
             name: "MacPilotApp",
