@@ -2,6 +2,19 @@ import XCTest
 @testable import MacPilotFan
 
 final class FanHelperClientTests: XCTestCase {
+    func testConnectionProviderIsCreatedLazilyOnFirstRequest() async throws {
+        let remote = RemoteSpy()
+        var factoryCalls = 0
+        let client = FanHelperClient(remoteProviderFactory: {
+            factoryCalls += 1
+            return { _ in remote }
+        })
+
+        XCTAssertEqual(factoryCalls, 0)
+        try await client.setManual(fanIndex: 0, targetRPM: 3_000, leaseID: UUID(), expiresAt: Date().addingTimeInterval(3))
+        XCTAssertEqual(factoryCalls, 1)
+    }
+
     func testManualRequestForwardsClosedContractParameters() async throws {
         let remote = RemoteSpy()
         let client = FanHelperClient(remoteProvider: { _ in remote })

@@ -6,26 +6,32 @@ public enum FanHelperClientError: Error, Equatable {
 
 public final class FanHelperClient {
     typealias RemoteProvider = (@escaping (Error) -> Void) -> FanHelperProtocol?
+    typealias RemoteProviderFactory = () -> RemoteProvider
 
-    private let connection: NSXPCConnection?
-    private let remoteProvider: RemoteProvider
+    private let remoteProviderFactory: RemoteProviderFactory
+    private let connectionHolder: FanXPCConnectionHolder?
+    private let lock = NSLock()
+    private var remoteProvider: RemoteProvider?
 
-    public init() {
-        let connection = NSXPCConnection(machServiceName: "com.huyida.macpilot.fanhelper", options: .privileged)
-        connection.remoteObjectInterface = NSXPCInterface(with: FanHelperProtocol.self)
-        connection.resume()
-        self.connection = connection
-        self.remoteProvider = { errorHandler in
-            connection.remoteObjectProxyWithErrorHandler(errorHandler) as? FanHelperProtocol
-        }
+    public convenience init() {
+        let holder = FanXPCConnectionHolder()
+        self.init(remoteProviderFactory: { holder.makeRemoteProvider() }, connectionHolder: holder)
     }
 
-    init(remoteProvider: @escaping RemoteProvider) {
-        self.connection = nil
-        self.remoteProvider = remoteProvider
+    convenience init(remoteProvider: @escaping RemoteProvider) {
+        self.init(remoteProviderFactory: { remoteProvider })
     }
 
-    deinit { connection?.invalidate() }
+    convenience init(remoteProviderFactory: @escaping RemoteProviderFactory) {
+        self.init(remoteProviderFactory: remoteProviderFactory, connectionHolder: nil)
+    }
+
+    private init(remoteProviderFactory: @escaping RemoteProviderFactory, connectionHolder: FanXPCConnectionHolder?) {
+        self.remoteProviderFactory = remoteProviderFactory
+        self.connectionHolder = connectionHolder
+    }
+
+    deinit { connectionHolder?.invalidate() }
 
     public func setManual(fanIndex: Int, targetRPM: Double, leaseID: UUID, expiresAt: Date) async throws {
         try await perform { remote, reply in
@@ -54,7 +60,8 @@ public final class FanHelperClient {
     private func perform(_ operation: @escaping (FanHelperProtocol, @escaping (NSError?) -> Void) -> Void) async throws {
         try await withCheckedThrowingContinuation { continuation in
             let gate = ContinuationGate(continuation)
-            guard let remote = remoteProvider({ gate.resume(throwing: $0) }) else {
+            let provider = resolvedRemoteProvider()
+            guard let remote = provider({ gate.resume(throwing: $0) }) else {
                 gate.resume(throwing: FanHelperClientError.unavailable)
                 return
             }
@@ -63,6 +70,34 @@ public final class FanHelperClient {
                 else { gate.resume() }
             }
         }
+    }
+
+    private func resolvedRemoteProvider() -> RemoteProvider {
+        lock.lock()
+        defer { lock.unlock() }
+        if let remoteProvider { return remoteProvider }
+        let provider = remoteProviderFactory()
+        remoteProvider = provider
+        return provider
+    }
+}
+
+private final class FanXPCConnectionHolder {
+    private var connection: NSXPCConnection?
+
+    func makeRemoteProvider() -> FanHelperClient.RemoteProvider {
+        let connection = NSXPCConnection(machServiceName: "com.huyida.macpilot.fanhelper", options: .privileged)
+        connection.remoteObjectInterface = NSXPCInterface(with: FanHelperProtocol.self)
+        connection.resume()
+        self.connection = connection
+        return { errorHandler in
+            connection.remoteObjectProxyWithErrorHandler(errorHandler) as? FanHelperProtocol
+        }
+    }
+
+    func invalidate() {
+        connection?.invalidate()
+        connection = nil
     }
 }
 
