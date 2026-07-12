@@ -1,0 +1,52 @@
+native-macos/Sources/MacPilotApp/VoicePlaceholderView.swift
+  s_895396b36ea4cf::t_1610174817ee6d 24,28
+  s_895396b36ea4cf::t_2be7f63238756b 3-5,7-23,25-27,29-98
+native-macos/Sources/MacPilotVoice/VoicePersistentStore.swift
+  s_895396b36ea4cf::t_c30e097747a6a0 53-64,156-160
+  s_895396b36ea4cf::t_2540ae3600f76c 161
+native-macos/Sources/MacPilotApp/VoiceStore.swift
+  s_895396b36ea4cf::t_ee71a8d73587bc 215,218-219,222,224-226,229-233,235,277,280-285,305,308-312
+  s_895396b36ea4cf::t_23d9ee71ac8995 27-29,46-47,52-54,113,175,187,190-214,216-217,220-221,223,227-228,234,269-276,278-279,286-287,291-292,329-337
+  s_895396b36ea4cf::t_3dc2ead6186b37 89-90,145,293-304,306-307,313-314
+  s_895396b36ea4cf::t_1610174817ee6d 117,126
+  s_895396b36ea4cf::t_ad55e0157fadc6 156
+  s_895396b36ea4cf::t_b1dfe834938c7d 1-26,30-45,48-51,55-88,91-112,114-116,118-125,127-144,146-155,157-174,176-186,188-189,236-268,288-290,315-328,338-354
+native-macos/Sources/MacPilotApp/SettingsView.swift
+  s_895396b36ea4cf::t_99b4ae0eb032ac 10,20,39,41-42,74,104-107,109-170,187-225,227-228
+  s_895396b36ea4cf::t_1610174817ee6d 108
+native-macos/Sources/MacPilotVoice/GlobalHotKeyController.swift
+  s_895396b36ea4cf::t_ad55e0157fadc6 26-27,118
+  s_895396b36ea4cf::t_6a0f93c4c00b54 119
+native-macos/Package.swift
+  s_895396b36ea4cf::t_c30e097747a6a0 29
+native-macos/Sources/MacPilotVoice/AccessibleTextOutput.swift
+  s_895396b36ea4cf::t_ad55e0157fadc6 62,66-69,71,76-78,83-86
+native-macos/Sources/MacPilotCore/AppPresentation.swift
+  s_895396b36ea4cf::t_99b4ae0eb032ac 60-64
+native-macos/Sources/MacPilotApp/MenuBarController.swift
+  s_895396b36ea4cf::t_2be7f63238756b 17,36
+native-macos/Tests/MacPilotVoiceTests/GlobalHotKeyTests.swift
+  s_895396b36ea4cf::t_ad55e0157fadc6 5-10
+native-macos/Tests/MacPilotVoiceTests/VoicePersistentStoreTests.swift
+  s_895396b36ea4cf::t_c30e097747a6a0 1-15
+native-macos/Sources/MacPilotApp/main.swift
+  s_895396b36ea4cf::t_2be7f63238756b 7,18,31,43,62-63,74
+native-macos/Sources/MacPilotApp/RootPanelView.swift
+  s_895396b36ea4cf::t_2be7f63238756b 12,37
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "5db3a41b8e61000af0ece3c9aec6f72d6aff7cce",
+  "prompts": {},
+  "sessions": {
+    "s_895396b36ea4cf": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f54e6-6b50-7533-9eea-f7b602d60720",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "YidaHu <huyidada@gmail.com>"
+    }
+  }
+}
