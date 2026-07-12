@@ -64,6 +64,20 @@ public enum SMCValueCodec {
         return value
     }
 
+    public static func encodeFLT(_ value: Double) throws -> [UInt8] {
+        guard value.isFinite else { throw SMCValueError.nonFiniteValue }
+        guard value >= 0 else { throw SMCValueError.valueOutOfRange }
+        let floatValue = Float(value)
+        guard floatValue.isFinite else { throw SMCValueError.valueOutOfRange }
+        let raw = floatValue.bitPattern
+        return [
+            UInt8(raw & 0xff),
+            UInt8((raw >> 8) & 0xff),
+            UInt8((raw >> 16) & 0xff),
+            UInt8(raw >> 24)
+        ]
+    }
+
     private static func unsigned16(_ bytes: [UInt8]) throws -> UInt16 {
         guard bytes.count == 2 else {
             throw SMCValueError.invalidDataLength(expected: 2, actual: bytes.count)

@@ -1,10 +1,11 @@
 import Foundation
 import IOKit
 
-public final class AppleSMCConnection: SMCKeyReading {
+public final class AppleSMCConnection: SMCKeyAccessing {
     private static let selector: UInt32 = 2
     private static let readBytesCommand: UInt8 = 5
     private static let readKeyInfoCommand: UInt8 = 9
+    private static let writeBytesCommand: UInt8 = 6
 
     private var connection: io_connect_t = 0
 
@@ -40,6 +41,25 @@ public final class AppleSMCConnection: SMCKeyReading {
         let readOutput = try call(readInput)
 
         return withUnsafeBytes(of: readOutput.bytes) { Array($0.prefix(size)) }
+    }
+
+    public func write(_ key: SMCKey, bytes: [UInt8]) throws {
+        var infoInput = SMCKeyData()
+        infoInput.key = key.rawValue
+        infoInput.data8 = Self.readKeyInfoCommand
+        let infoOutput = try call(infoInput)
+        guard bytes.count == Int(infoOutput.keyInfo.dataSize), (1...32).contains(bytes.count) else {
+            throw SMCReadError.malformedValue(key.stringValue)
+        }
+
+        var writeInput = SMCKeyData()
+        writeInput.key = key.rawValue
+        writeInput.keyInfo.dataSize = infoOutput.keyInfo.dataSize
+        writeInput.data8 = Self.writeBytesCommand
+        withUnsafeMutableBytes(of: &writeInput.bytes) { destination in
+            destination.copyBytes(from: bytes)
+        }
+        _ = try call(writeInput)
     }
 
     private func call(_ input: SMCKeyData) throws -> SMCKeyData {

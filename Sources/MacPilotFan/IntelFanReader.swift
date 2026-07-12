@@ -13,6 +13,12 @@ public protocol SMCKeyReading {
     func read(_ key: SMCKey) throws -> [UInt8]
 }
 
+public protocol SMCKeyWriting {
+    func write(_ key: SMCKey, bytes: [UInt8]) throws
+}
+
+public protocol SMCKeyAccessing: SMCKeyReading, SMCKeyWriting {}
+
 public struct IntelFanReader {
     private let reader: any SMCKeyReading
 

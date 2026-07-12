@@ -21,6 +21,11 @@ final class SMCValueTests: XCTestCase {
         XCTAssertThrowsError(try SMCValueCodec.decodeFLT([0x00, 0x00, 0x80, 0x7F]))
     }
 
+    func testFLTRoundTripsFiniteFanSpeed() throws {
+        XCTAssertEqual(try SMCValueCodec.decodeFLT(SMCValueCodec.encodeFLT(3_000)), 3_000)
+        XCTAssertThrowsError(try SMCValueCodec.encodeFLT(.nan))
+    }
+
     func testKeyRequiresExactlyFourASCIICharacters() throws {
         XCTAssertEqual(try SMCKey("F0Ac").stringValue, "F0Ac")
         XCTAssertThrowsError(try SMCKey("Fan"))

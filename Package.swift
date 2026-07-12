@@ -6,7 +6,8 @@ let package = Package(
     platforms: [.macOS(.v12)],
     products: [
         .executable(name: "MacPilotApp", targets: ["MacPilotApp"]),
-        .executable(name: "MacPilotFanDiagnostic", targets: ["MacPilotFanDiagnostic"])
+        .executable(name: "MacPilotFanDiagnostic", targets: ["MacPilotFanDiagnostic"]),
+        .executable(name: "MacPilotFanHelper", targets: ["MacPilotFanHelperExecutable"])
     ],
     targets: [
         .target(name: "MacPilotCore"),
@@ -15,6 +16,10 @@ let package = Package(
         .target(name: "MacPilotCalendar", dependencies: ["MacPilotCore"]),
         .target(name: "MacPilotFan"),
         .target(name: "MacPilotFanHelper", dependencies: ["MacPilotFan"]),
+        .executableTarget(
+            name: "MacPilotFanHelperExecutable",
+            dependencies: ["MacPilotFan", "MacPilotFanHelper"]
+        ),
         .executableTarget(name: "MacPilotFanDiagnostic", dependencies: ["MacPilotFan"]),
         .executableTarget(
             name: "MacPilotApp",
@@ -24,6 +29,6 @@ let package = Package(
         .testTarget(name: "MacPilotMetricsTests", dependencies: ["MacPilotMetrics"]),
         .testTarget(name: "MacPilotSystemActionsTests", dependencies: ["MacPilotSystemActions"]),
         .testTarget(name: "MacPilotCalendarTests", dependencies: ["MacPilotCalendar"]),
-        .testTarget(name: "MacPilotFanTests", dependencies: ["MacPilotFan"])
+        .testTarget(name: "MacPilotFanTests", dependencies: ["MacPilotFan", "MacPilotFanHelper"])
     ]
 )

@@ -25,12 +25,16 @@ public struct FanRequestValidator: Sendable {
         guard let range = ranges[fanIndex] else { throw FanRequestValidationError.unknownFan(fanIndex) }
         guard targetRPM.isFinite else { throw FanRequestValidationError.nonFiniteRPM }
         guard range.contains(targetRPM) else { throw FanRequestValidationError.rpmOutsideVerifiedRange }
-        let duration = expiresAt.timeIntervalSince(now)
-        guard duration > 0 else { throw FanRequestValidationError.expiredLease }
-        guard duration <= maximumLeaseDuration else { throw FanRequestValidationError.leaseTooLong }
+        try validateLease(expiresAt: expiresAt, now: now)
         if let lastRequestAt, now.timeIntervalSince(lastRequestAt) < minimumRequestInterval {
             throw FanRequestValidationError.rateLimited
         }
+    }
+
+    public func validateLease(expiresAt: Date, now: Date) throws {
+        let duration = expiresAt.timeIntervalSince(now)
+        guard duration > 0 else { throw FanRequestValidationError.expiredLease }
+        guard duration <= maximumLeaseDuration else { throw FanRequestValidationError.leaseTooLong }
     }
 
     public func validateMode(_ rawValue: String) throws -> FanControlMode {
