@@ -54,7 +54,7 @@ public enum SettingsSection: String, CaseIterable, Identifiable, Sendable {
     public var phaseDescription: String {
         switch self {
         case .general, .appearance, .monitoring: return "基础设置已开放"
-        case .fans: return "将在风扇控制阶段开放"
+        case .fans: return "双风扇监控与安全控制"
         case .tools, .calendar: return "将在工具与提醒阶段开放"
         case .voice, .artificialIntelligence, .shortcuts, .permissions, .privacy:
             return "将在语音迁移阶段开放"

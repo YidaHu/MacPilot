@@ -7,7 +7,8 @@ let package = Package(
     products: [
         .executable(name: "MacPilotApp", targets: ["MacPilotApp"]),
         .executable(name: "MacPilotFanDiagnostic", targets: ["MacPilotFanDiagnostic"]),
-        .executable(name: "MacPilotFanHelper", targets: ["MacPilotFanHelperExecutable"])
+        .executable(name: "MacPilotFanHelper", targets: ["MacPilotFanHelperExecutable"]),
+        .executable(name: "MacPilotFanRecovery", targets: ["MacPilotFanRecovery"])
     ],
     targets: [
         .target(name: "MacPilotCore"),
@@ -21,9 +22,10 @@ let package = Package(
             dependencies: ["MacPilotFan", "MacPilotFanHelper"]
         ),
         .executableTarget(name: "MacPilotFanDiagnostic", dependencies: ["MacPilotFan"]),
+        .executableTarget(name: "MacPilotFanRecovery", dependencies: ["MacPilotFan"]),
         .executableTarget(
             name: "MacPilotApp",
-            dependencies: ["MacPilotCore", "MacPilotMetrics", "MacPilotSystemActions", "MacPilotCalendar"]
+            dependencies: ["MacPilotCore", "MacPilotMetrics", "MacPilotSystemActions", "MacPilotCalendar", "MacPilotFan"]
         ),
         .testTarget(name: "MacPilotCoreTests", dependencies: ["MacPilotCore"]),
         .testTarget(name: "MacPilotMetricsTests", dependencies: ["MacPilotMetrics"]),

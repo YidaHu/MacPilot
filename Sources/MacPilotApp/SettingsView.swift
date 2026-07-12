@@ -1,11 +1,12 @@
 import AppKit
 import MacPilotCalendar
 import MacPilotCore
+import MacPilotFan
 import SwiftUI
 
 @MainActor
 final class SettingsWindowController: NSWindowController {
-    init(calendar: CalendarReminderController) {
+    init(calendar: CalendarReminderController, fans: FanStore) {
         let window = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 760, height: 520),
             styleMask: [.titled, .closable, .miniaturizable, .resizable],
@@ -15,7 +16,7 @@ final class SettingsWindowController: NSWindowController {
         window.title = "MacPilot 设置"
         window.minSize = NSSize(width: 680, height: 460)
         window.isReleasedWhenClosed = false
-        window.contentViewController = NSHostingController(rootView: SettingsView(calendar: calendar))
+        window.contentViewController = NSHostingController(rootView: SettingsView(calendar: calendar, fans: fans))
         super.init(window: window)
     }
 
@@ -32,6 +33,7 @@ final class SettingsWindowController: NSWindowController {
 
 struct SettingsView: View {
     @ObservedObject var calendar: CalendarReminderController
+    @ObservedObject var fans: FanStore
     @State private var selection: SettingsSection = .general
 
     var body: some View {
@@ -84,6 +86,11 @@ struct SettingsView: View {
                     SettingRow(title: "提醒时间", detail: "当前使用已验证的默认策略", control: "提前 10 分钟")
                     SettingRow(title: "日历权限", detail: "关闭提醒不会撤销系统权限", control: calendar.status == .waitingForPermission ? "需要授权" : "正常")
                     Button("测试火箭") { calendar.testReminder() }
+                } else if selection == .fans {
+                    SettingRow(title: "控制模式", detail: "手动模式使用 5 秒短租约", control: fans.selectedPreset.title)
+                    SettingRow(title: "硬件能力", detail: "只允许已验证的左右风扇范围", control: fans.snapshot?.controlsAvailable == true ? "双风扇可用" : "检查中")
+                    SettingRow(title: "失联保护", detail: "助手断开、超时或应用退出后恢复", control: "系统自动")
+                    Button("立即恢复系统自动控制") { Task { await fans.restoreAutomatic() } }
                 } else {
                     Spacer()
                     HStack {

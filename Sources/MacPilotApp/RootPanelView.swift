@@ -1,10 +1,12 @@
 import MacPilotCalendar
 import MacPilotCore
+import MacPilotFan
 import SwiftUI
 
 struct RootPanelView: View {
     @ObservedObject var store: AppStore
     @ObservedObject var calendar: CalendarReminderController
+    @ObservedObject var fans: FanStore
     let openSettings: () -> Void
     @State private var selectedTab: DashboardTab = .overview
 
@@ -22,9 +24,9 @@ struct RootPanelView: View {
             Group {
                 switch selectedTab {
                 case .overview:
-                    OverviewView(store: store, calendar: calendar)
+                    OverviewView(store: store, calendar: calendar, fans: fans)
                 case .fans:
-                    FansPlaceholderView()
+                    FansView(store: fans)
                 case .tools:
                     ToolsView(calendar: calendar)
                 case .voice:

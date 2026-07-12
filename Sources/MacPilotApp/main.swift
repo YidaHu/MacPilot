@@ -1,6 +1,7 @@
 import AppKit
 import MacPilotCalendar
 import MacPilotCore
+import MacPilotFan
 import MacPilotMetrics
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
@@ -9,6 +10,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var settingsWindowController: SettingsWindowController?
     private var calendarController: CalendarReminderController?
     private var rocketOverlay: RocketOverlayWindow?
+    private var fanStore: FanStore?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         Task { @MainActor [weak self] in
@@ -26,6 +28,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func setUpApplication() {
         _ = NSApp.setActivationPolicy(.accessory)
         let store = AppStore(metrics: LiveMetricsProvider())
+        let fans = FanStore.live()
+        fans.refresh()
         let monitor = EventKitCalendarMonitor()
         let rocket = RocketOverlayWindow()
         let reminderStoreURL = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
@@ -44,8 +48,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             testAction: { rocket.presentRocket() },
             enabledDidChange: { UserDefaults.standard.set($0, forKey: "rocketReminderEnabled") }
         )
-        let settings = SettingsWindowController(calendar: calendar)
-        let menuBar = MenuBarController(store: store, calendar: calendar) {
+        let settings = SettingsWindowController(calendar: calendar, fans: fans)
+        let menuBar = MenuBarController(store: store, calendar: calendar, fans: fans) {
             settings.show()
         }
         self.store = store
@@ -53,6 +57,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         menuBarController = menuBar
         calendarController = calendar
         rocketOverlay = rocket
+        fanStore = fans
         menuBar.startRefreshing()
         NSWorkspace.shared.notificationCenter.addObserver(
             self,

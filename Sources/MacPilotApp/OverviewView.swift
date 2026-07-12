@@ -1,10 +1,12 @@
 import MacPilotCalendar
 import MacPilotCore
+import MacPilotFan
 import SwiftUI
 
 struct OverviewView: View {
     @ObservedObject var store: AppStore
     @ObservedObject var calendar: CalendarReminderController
+    @ObservedObject var fans: FanStore
     private let columns = [GridItem(.flexible(), spacing: 8), GridItem(.flexible(), spacing: 8)]
 
     var body: some View {
@@ -34,8 +36,8 @@ struct OverviewView: View {
                         )
                     }
                     HStack(spacing: 8) {
-                        FanPreviewCard(title: "左风扇")
-                        FanPreviewCard(title: "右风扇")
+                        FanPreviewCard(title: "左风扇", fan: fans.snapshot?.fans.first(where: { $0.index == 0 }))
+                        FanPreviewCard(title: "右风扇", fan: fans.snapshot?.fans.first(where: { $0.index == 1 }))
                     }
                     shortcutRow
                     voiceCard
@@ -168,16 +170,22 @@ private struct MetricCard: View {
 
 private struct FanPreviewCard: View {
     let title: String
+    let fan: FanStatus?
     var body: some View {
         VStack(alignment: .leading, spacing: 7) {
-            HStack { Text(title); Spacer(); Text("— RPM").fontWeight(.semibold) }
-            Slider(value: .constant(0.35)).disabled(true)
-            Text("风扇控制阶段启用").font(.caption2).foregroundColor(.secondary)
+            HStack { Text(title); Spacer(); Text(fan.map { "\(Int($0.actualRPM)) RPM" } ?? "— RPM").fontWeight(.semibold) }
+            ProgressView(value: progress).tint(.cyan)
+            Text(fan == nil ? "正在读取 SMC" : "系统自动 · 点击风扇页调节").font(.caption2).foregroundColor(.secondary)
         }
         .padding(11)
         .foregroundColor(.white)
         .background(Color(red: 0.11, green: 0.16, blue: 0.25))
         .clipShape(RoundedRectangle(cornerRadius: 13))
+    }
+
+    private var progress: Double {
+        guard let fan, let minimum = fan.minimumRPM, let maximum = fan.maximumRPM, maximum > minimum else { return 0 }
+        return min(max((fan.actualRPM - minimum) / (maximum - minimum), 0), 1)
     }
 }
 

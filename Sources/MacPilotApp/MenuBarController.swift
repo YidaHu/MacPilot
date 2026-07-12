@@ -1,6 +1,7 @@
 import AppKit
 import MacPilotCalendar
 import MacPilotCore
+import MacPilotFan
 import SwiftUI
 
 @MainActor
@@ -8,11 +9,13 @@ final class MenuBarController: NSObject, NSPopoverDelegate {
     private let statusItem: NSStatusItem
     private let popover = NSPopover()
     private let store: AppStore
+    private let fans: FanStore
     private let openSettings: () -> Void
     private var refreshTask: Task<Void, Never>?
 
-    init(store: AppStore, calendar: CalendarReminderController, openSettings: @escaping () -> Void) {
+    init(store: AppStore, calendar: CalendarReminderController, fans: FanStore, openSettings: @escaping () -> Void) {
         self.store = store
+        self.fans = fans
         self.openSettings = openSettings
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         super.init()
@@ -29,7 +32,7 @@ final class MenuBarController: NSObject, NSPopoverDelegate {
         popover.delegate = self
         popover.contentSize = NSSize(width: 430, height: 660)
         popover.contentViewController = NSHostingController(
-            rootView: RootPanelView(store: store, calendar: calendar, openSettings: openSettings)
+            rootView: RootPanelView(store: store, calendar: calendar, fans: fans, openSettings: openSettings)
         )
     }
 
@@ -66,6 +69,7 @@ final class MenuBarController: NSObject, NSPopoverDelegate {
             while !Task.isCancelled {
                 guard let self else { return }
                 await self.store.refresh()
+                self.fans.refresh()
                 do {
                     try await Task.sleep(nanoseconds: UInt64(interval * 1_000_000_000))
                 } catch {
