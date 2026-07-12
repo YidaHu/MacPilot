@@ -15,6 +15,8 @@ final class VoiceStore: ObservableObject {
     @Published var isEnabled: Bool
     @Published var sttProvider: String
     @Published var sttLanguage: String
+    @Published var sttCustomBaseURL: String
+    @Published var sttCustomModel: String
     @Published var llmProvider: String
     @Published var llmBaseURL: String
     @Published var llmModel: String
@@ -36,6 +38,8 @@ final class VoiceStore: ObservableObject {
         isEnabled = defaults.object(forKey: Keys.enabled) as? Bool ?? true
         sttProvider = defaults.string(forKey: Keys.sttProvider) ?? "glm-asr"
         sttLanguage = defaults.string(forKey: Keys.sttLanguage) ?? "zh"
+        sttCustomBaseURL = defaults.string(forKey: Keys.sttCustomBaseURL) ?? "http://127.0.0.1:8000/v1"
+        sttCustomModel = defaults.string(forKey: Keys.sttCustomModel) ?? "Systran/faster-whisper-large-v3"
         llmProvider = defaults.string(forKey: Keys.llmProvider) ?? "zhipu"
         llmBaseURL = defaults.string(forKey: Keys.llmBaseURL) ?? "https://open.bigmodel.cn/api/paas/v4"
         llmModel = defaults.string(forKey: Keys.llmModel) ?? "glm-4-flash"
@@ -80,6 +84,8 @@ final class VoiceStore: ObservableObject {
     func saveConfiguration() {
         defaults.set(sttProvider, forKey: Keys.sttProvider)
         defaults.set(sttLanguage, forKey: Keys.sttLanguage)
+        defaults.set(sttCustomBaseURL, forKey: Keys.sttCustomBaseURL)
+        defaults.set(sttCustomModel, forKey: Keys.sttCustomModel)
         defaults.set(llmProvider, forKey: Keys.llmProvider)
         defaults.set(llmBaseURL, forKey: Keys.llmBaseURL)
         defaults.set(llmModel, forKey: Keys.llmModel)
@@ -165,6 +171,7 @@ final class VoiceStore: ObservableObject {
         case "openai-whisper": return try .preset(.openAIWhisper)
         case "groq-whisper": return try .preset(.groqWhisper)
         case "siliconflow": return try .preset(.siliconFlow)
+        case "custom-whisper": return try .customWhisper(baseURL: sttCustomBaseURL, model: sttCustomModel)
         default: throw STTClientError.invalidConfiguration("暂不支持该转写服务：\(sttProvider)")
         }
     }
@@ -240,6 +247,8 @@ final class VoiceStore: ObservableObject {
     private func apply(_ settings: ImportedVoiceSettings) {
         sttProvider = settings.sttProvider
         sttLanguage = settings.sttLanguage
+        sttCustomBaseURL = settings.sttCustomBaseURL
+        sttCustomModel = settings.sttCustomModel
         llmProvider = settings.llmProvider
         llmBaseURL = settings.llmBaseURL
         llmModel = settings.llmModel
@@ -251,6 +260,8 @@ final class VoiceStore: ObservableObject {
     private func saveConfigurationValues() {
         defaults.set(sttProvider, forKey: Keys.sttProvider)
         defaults.set(sttLanguage, forKey: Keys.sttLanguage)
+        defaults.set(sttCustomBaseURL, forKey: Keys.sttCustomBaseURL)
+        defaults.set(sttCustomModel, forKey: Keys.sttCustomModel)
         defaults.set(llmProvider, forKey: Keys.llmProvider)
         defaults.set(llmBaseURL, forKey: Keys.llmBaseURL)
         defaults.set(llmModel, forKey: Keys.llmModel)
@@ -345,6 +356,8 @@ private enum Keys {
     static let enabled = "voice.enabled"
     static let sttProvider = "voice.sttProvider"
     static let sttLanguage = "voice.sttLanguage"
+    static let sttCustomBaseURL = "voice.sttCustomBaseURL"
+    static let sttCustomModel = "voice.sttCustomModel"
     static let llmProvider = "voice.llmProvider"
     static let llmBaseURL = "voice.llmBaseURL"
     static let llmModel = "voice.llmModel"

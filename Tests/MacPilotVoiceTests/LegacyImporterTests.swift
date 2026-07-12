@@ -17,6 +17,8 @@ final class LegacyImporterTests: XCTestCase {
         XCTAssertEqual(summary.historyCount, 1)
         XCTAssertEqual(summary.dictionaryCount, 1)
         XCTAssertEqual(summary.settings.sttProvider, "glm-asr")
+        XCTAssertEqual(summary.settings.sttCustomBaseURL, "http://127.0.0.1:8000/v1")
+        XCTAssertEqual(summary.settings.sttCustomModel, "local-whisper")
         XCTAssertEqual(try store.history(limit: 10).first?.polishedText, "整理后的文本")
         XCTAssertEqual(try store.dictionary().first?.word, "MacPilot")
         XCTAssertEqual(try keychain.string(account: "stt.glm-asr"), "dummy-stt-key")
@@ -45,6 +47,7 @@ final class LegacyImporterTests: XCTestCase {
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         let settings: [String: Any] = ["app_config": [
             "stt_provider": "glm-asr", "stt_api_key": "dummy-stt-key", "stt_language": "zh",
+            "stt_custom_base_url": "http://127.0.0.1:8000/v1", "stt_custom_model": "local-whisper",
             "llm_provider": "zhipu", "llm_api_key": "dummy-llm-key", "llm_base_url": "https://example.test/v1",
             "llm_model": "glm-test", "hotkey": "Option+/", "hotkey_mode": "toggle", "polish_enabled": true
         ]]

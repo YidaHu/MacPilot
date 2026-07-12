@@ -4,6 +4,8 @@ import SQLite3
 public struct ImportedVoiceSettings: Equatable, Sendable {
     public let sttProvider: String
     public let sttLanguage: String
+    public let sttCustomBaseURL: String
+    public let sttCustomModel: String
     public let llmProvider: String
     public let llmBaseURL: String
     public let llmModel: String
@@ -63,7 +65,7 @@ public final class LegacyOpenTypelessImporter {
     }
 
     private var emptySettings: ImportedVoiceSettings {
-        ImportedVoiceSettings(sttProvider: "", sttLanguage: "", llmProvider: "", llmBaseURL: "", llmModel: "", hotkey: "", hotkeyMode: "", polishEnabled: false)
+        ImportedVoiceSettings(sttProvider: "", sttLanguage: "", sttCustomBaseURL: "", sttCustomModel: "", llmProvider: "", llmBaseURL: "", llmModel: "", hotkey: "", hotkeyMode: "", polishEnabled: false)
     }
 
     private func copyLegacyFiles(from source: URL) throws -> (directory: URL, settings: URL, database: URL?) {
@@ -95,6 +97,8 @@ public final class LegacyOpenTypelessImporter {
         func string(_ key: String, _ fallback: String = "") -> String { app[key] as? String ?? fallback }
         let settings = ImportedVoiceSettings(
             sttProvider: string("stt_provider", "glm-asr"), sttLanguage: string("stt_language", "zh"),
+            sttCustomBaseURL: string("stt_custom_base_url", "http://127.0.0.1:8000/v1"),
+            sttCustomModel: string("stt_custom_model", "Systran/faster-whisper-large-v3"),
             llmProvider: string("llm_provider", "openrouter"), llmBaseURL: string("llm_base_url"), llmModel: string("llm_model"),
             hotkey: string("hotkey", "Option+/"), hotkeyMode: string("hotkey_mode", "hold"), polishEnabled: app["polish_enabled"] as? Bool ?? true
         )

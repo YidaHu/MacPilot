@@ -115,6 +115,7 @@ struct SettingsView: View {
                             Text("OpenAI Whisper").tag("openai-whisper")
                             Text("Groq Whisper").tag("groq-whisper")
                             Text("SiliconFlow").tag("siliconflow")
+                            Text("Custom Whisper").tag("custom-whisper")
                         }.labelsHidden().frame(width: 190)
                     }
                     HStack {
@@ -125,6 +126,10 @@ struct SettingsView: View {
                             Text("英文").tag("en")
                             Text("自动识别").tag("multi")
                         }.labelsHidden().frame(width: 190)
+                    }
+                    if voice.sttProvider == "custom-whisper" {
+                        LabeledTextField(title: "Whisper Base URL", value: $voice.sttCustomBaseURL, placeholder: "http://127.0.0.1:8000/v1")
+                        LabeledTextField(title: "Whisper 模型", value: $voice.sttCustomModel, placeholder: "模型名称")
                     }
                     SecretSettingRow(title: "转写 API Key", isStored: voice.hasSTTKey, value: $sttKey) {
                         voice.saveSTTKey(sttKey); sttKey = ""
