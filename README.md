@@ -11,7 +11,7 @@
 [![Tests](https://img.shields.io/github/actions/workflow/status/YidaHu/MacPilot/ci.yml?style=flat-square&label=tests)](https://github.com/YidaHu/MacPilot/actions)
 [![License](https://img.shields.io/badge/license-MIT-63C174?style=flat-square)](LICENSE)
 
-[Features](#why-macpilot) · [Build](#build-it) · [Safety](#fan-control-safety) · [Architecture](#architecture) · [Contribute](CONTRIBUTING.md)
+[Product page](https://www.yidahu.top/projects/macpilot) · [Features](#why-macpilot) · [Build](#build-it) · [Safety](#fan-control-safety) · [Architecture](#architecture) · [Contribute](CONTRIBUTING.md)
 
 </div>
 
@@ -151,4 +151,3 @@ Issues and focused pull requests are welcome. Start with [CONTRIBUTING.md](CONTR
 ## License
 
 MIT © 2026 [YidaHu](https://github.com/YidaHu)
-
