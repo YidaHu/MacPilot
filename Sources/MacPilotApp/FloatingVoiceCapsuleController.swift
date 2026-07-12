@@ -21,7 +21,6 @@ final class FloatingVoiceCapsuleController: NSObject {
     private let store: VoiceStore
     private let defaults: UserDefaults
     private var cancellables: Set<AnyCancellable> = []
-    private var notificationTokens: [NSObjectProtocol] = []
     private var isPositioned = false
     private var dragOrigin: NSPoint?
 
@@ -56,8 +55,8 @@ final class FloatingVoiceCapsuleController: NSObject {
 
     func shutdown() {
         cancellables.removeAll()
-        notificationTokens.forEach(NotificationCenter.default.removeObserver)
-        notificationTokens.removeAll()
+        NotificationCenter.default.removeObserver(self)
+        NSWorkspace.shared.notificationCenter.removeObserver(self)
         panel.orderOut(nil)
     }
 
@@ -70,16 +69,22 @@ final class FloatingVoiceCapsuleController: NSObject {
     }
 
     private func observeDisplays() {
-        notificationTokens.append(NotificationCenter.default.addObserver(
-            forName: NSApplication.didChangeScreenParametersNotification,
-            object: nil,
-            queue: .main
-        ) { [weak self] _ in Task { @MainActor in self?.revalidatePosition() } })
-        notificationTokens.append(NSWorkspace.shared.notificationCenter.addObserver(
-            forName: NSWorkspace.didWakeNotification,
-            object: nil,
-            queue: .main
-        ) { [weak self] _ in Task { @MainActor in self?.revalidatePosition() } })
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(displayConfigurationDidChange(_:)),
+            name: NSApplication.didChangeScreenParametersNotification,
+            object: nil
+        )
+        NSWorkspace.shared.notificationCenter.addObserver(
+            self,
+            selector: #selector(displayConfigurationDidChange(_:)),
+            name: NSWorkspace.didWakeNotification,
+            object: nil
+        )
+    }
+
+    @objc private func displayConfigurationDidChange(_ notification: Notification) {
+        revalidatePosition()
     }
 
     private func apply(state: CapsuleDisplayState, autoHide: Bool) {

@@ -15,11 +15,13 @@ enum CleaningSessionError: LocalizedError {
 }
 
 @MainActor
-final class CleaningOverlayController {
+final class CleaningOverlayController: NSObject {
     private var panel: NSPanel?
     private var timer: Timer?
     private var blocker: KeyboardEventBlocker?
     private var remainingSeconds = 0
+    private var overlayTitle = ""
+    private var overlayDetail = ""
 
     func showScreenCleaning(duration: TimeInterval = 30) {
         showOverlay(title: "清洁屏幕", detail: "屏幕已变暗，点击任意位置不会操作原窗口", duration: duration)
@@ -70,9 +72,19 @@ final class CleaningOverlayController {
         )
         panel.orderFrontRegardless()
         self.panel = panel
-        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
-            Task { @MainActor in self?.tick(title: title, detail: detail) }
-        }
+        overlayTitle = title
+        overlayDetail = detail
+        timer = Timer.scheduledTimer(
+            timeInterval: 1,
+            target: self,
+            selector: #selector(timerDidFire(_:)),
+            userInfo: nil,
+            repeats: true
+        )
+    }
+
+    @objc private func timerDidFire(_ timer: Timer) {
+        tick(title: overlayTitle, detail: overlayDetail)
     }
 
     private func tick(title: String, detail: String) {
