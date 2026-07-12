@@ -24,5 +24,7 @@
     <true/>
     <key>NSSupportsAutomaticGraphicsSwitching</key>
     <true/>
+    <key>NSCalendarsUsageDescription</key>
+    <string>MacPilot 需要读取日历事件，以便在会议开始前显示火箭提醒。</string>
 </dict>
 </plist>

@@ -1,10 +1,11 @@
 import AppKit
+import MacPilotCalendar
 import MacPilotCore
 import SwiftUI
 
 @MainActor
 final class SettingsWindowController: NSWindowController {
-    init() {
+    init(calendar: CalendarReminderController) {
         let window = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 760, height: 520),
             styleMask: [.titled, .closable, .miniaturizable, .resizable],
@@ -14,7 +15,7 @@ final class SettingsWindowController: NSWindowController {
         window.title = "MacPilot 设置"
         window.minSize = NSSize(width: 680, height: 460)
         window.isReleasedWhenClosed = false
-        window.contentViewController = NSHostingController(rootView: SettingsView())
+        window.contentViewController = NSHostingController(rootView: SettingsView(calendar: calendar))
         super.init(window: window)
     }
 
@@ -30,6 +31,7 @@ final class SettingsWindowController: NSWindowController {
 }
 
 struct SettingsView: View {
+    @ObservedObject var calendar: CalendarReminderController
     @State private var selection: SettingsSection = .general
 
     var body: some View {
@@ -73,6 +75,15 @@ struct SettingsView: View {
                     SettingRow(title: "面板刷新频率", detail: "面板打开时实时更新", control: "1 秒")
                     SettingRow(title: "后台刷新频率", detail: "降低常驻功耗", control: "15 秒")
                     SettingRow(title: "网络风险摘要", detail: "显示 VPN、代理和 Wi-Fi 加密依据", control: "已开启")
+                } else if selection == .calendar {
+                    SettingToggleRow(
+                        title: "会议火箭提醒",
+                        detail: "默认在会议开始前 10 分钟提醒",
+                        isOn: Binding(get: { calendar.isEnabled }, set: { calendar.setEnabled($0) })
+                    )
+                    SettingRow(title: "提醒时间", detail: "当前使用已验证的默认策略", control: "提前 10 分钟")
+                    SettingRow(title: "日历权限", detail: "关闭提醒不会撤销系统权限", control: calendar.status == .waitingForPermission ? "需要授权" : "正常")
+                    Button("测试火箭") { calendar.testReminder() }
                 } else {
                     Spacer()
                     HStack {
@@ -90,6 +101,24 @@ struct SettingsView: View {
             .padding(24)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         }
+    }
+}
+
+private struct SettingToggleRow: View {
+    let title: String
+    let detail: String
+    @Binding var isOn: Bool
+    var body: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 3) {
+                Text(title).fontWeight(.medium)
+                Text(detail).font(.caption).foregroundColor(.secondary)
+            }
+            Spacer()
+            Toggle("", isOn: $isOn).labelsHidden()
+        }
+        .padding(12)
+        .overlay(RoundedRectangle(cornerRadius: 11).stroke(Color.secondary.opacity(0.18)))
     }
 }
 

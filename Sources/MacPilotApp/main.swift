@@ -1,4 +1,5 @@
 import AppKit
+import MacPilotCalendar
 import MacPilotCore
 import MacPilotMetrics
 
@@ -6,6 +7,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var store: AppStore?
     private var menuBarController: MenuBarController?
     private var settingsWindowController: SettingsWindowController?
+    private var calendarController: CalendarReminderController?
+    private var rocketOverlay: RocketOverlayWindow?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         Task { @MainActor [weak self] in
@@ -23,14 +26,44 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func setUpApplication() {
         _ = NSApp.setActivationPolicy(.accessory)
         let store = AppStore(metrics: LiveMetricsProvider())
-        let settings = SettingsWindowController()
-        let menuBar = MenuBarController(store: store) {
+        let monitor = EventKitCalendarMonitor()
+        let rocket = RocketOverlayWindow()
+        let reminderStoreURL = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+            .appendingPathComponent("MacPilot", isDirectory: true)
+            .appendingPathComponent("calendar-reminders.json")
+        let scheduler = ReminderScheduler(
+            calendarProvider: monitor,
+            reminderStore: ReminderStore(fileURL: reminderStoreURL),
+            rocketPresenter: rocket,
+            decisionEngine: ReminderDecisionEngine()
+        )
+        let calendar = CalendarReminderController(
+            initiallyEnabled: UserDefaults.standard.bool(forKey: "rocketReminderEnabled"),
+            authorization: monitor,
+            scanner: scheduler,
+            testAction: { rocket.presentRocket() },
+            enabledDidChange: { UserDefaults.standard.set($0, forKey: "rocketReminderEnabled") }
+        )
+        let settings = SettingsWindowController(calendar: calendar)
+        let menuBar = MenuBarController(store: store, calendar: calendar) {
             settings.show()
         }
         self.store = store
         settingsWindowController = settings
         menuBarController = menuBar
+        calendarController = calendar
+        rocketOverlay = rocket
         menuBar.startRefreshing()
+        NSWorkspace.shared.notificationCenter.addObserver(
+            self,
+            selector: #selector(handleWake),
+            name: NSWorkspace.didWakeNotification,
+            object: nil
+        )
+    }
+
+    @objc private func handleWake() {
+        Task { @MainActor [weak self] in self?.calendarController?.handleWake() }
     }
 }
 

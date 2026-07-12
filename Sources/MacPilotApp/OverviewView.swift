@@ -1,8 +1,10 @@
+import MacPilotCalendar
 import MacPilotCore
 import SwiftUI
 
 struct OverviewView: View {
     @ObservedObject var store: AppStore
+    @ObservedObject var calendar: CalendarReminderController
     private let columns = [GridItem(.flexible(), spacing: 8), GridItem(.flexible(), spacing: 8)]
 
     var body: some View {
@@ -75,7 +77,7 @@ struct OverviewView: View {
         HStack(spacing: 7) {
             ShortcutPreview(icon: "bolt.fill", title: "省电")
             ShortcutPreview(icon: "cup.and.saucer.fill", title: "唤醒")
-            ShortcutPreview(icon: "lock.fill", title: "锁屏")
+            RocketShortcut(isEnabled: calendar.isEnabled) { calendar.setEnabled(!calendar.isEnabled) }
             ShortcutPreview(icon: "keyboard", title: "键盘")
         }
     }
@@ -122,6 +124,24 @@ struct OverviewView: View {
     private func percent(_ value: Double) -> String { "\(Int((value * 100).rounded()))%" }
     private func bytes(_ value: UInt64) -> String { ByteCountFormatter.string(fromByteCount: Int64(value), countStyle: .memory) }
     private func rate(_ value: UInt64) -> String { "\(ByteCountFormatter.string(fromByteCount: Int64(value), countStyle: .file))/s" }
+}
+
+private struct RocketShortcut: View {
+    let isEnabled: Bool
+    let action: () -> Void
+    var body: some View {
+        Button(action: action) {
+            VStack(spacing: 5) {
+                Text("🚀").font(.body)
+                Text("会议").font(.caption2)
+            }
+            .frame(maxWidth: .infinity, minHeight: 54)
+            .background(isEnabled ? Color.indigo : Color(nsColor: .controlBackgroundColor).opacity(0.88))
+            .foregroundColor(isEnabled ? .white : .primary)
+            .clipShape(RoundedRectangle(cornerRadius: 11))
+        }
+        .buttonStyle(.plain)
+    }
 }
 
 private struct MetricCard: View {

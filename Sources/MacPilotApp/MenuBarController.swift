@@ -1,4 +1,5 @@
 import AppKit
+import MacPilotCalendar
 import MacPilotCore
 import SwiftUI
 
@@ -10,7 +11,7 @@ final class MenuBarController: NSObject, NSPopoverDelegate {
     private let openSettings: () -> Void
     private var refreshTask: Task<Void, Never>?
 
-    init(store: AppStore, openSettings: @escaping () -> Void) {
+    init(store: AppStore, calendar: CalendarReminderController, openSettings: @escaping () -> Void) {
         self.store = store
         self.openSettings = openSettings
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
@@ -28,7 +29,7 @@ final class MenuBarController: NSObject, NSPopoverDelegate {
         popover.delegate = self
         popover.contentSize = NSSize(width: 430, height: 660)
         popover.contentViewController = NSHostingController(
-            rootView: RootPanelView(store: store, openSettings: openSettings)
+            rootView: RootPanelView(store: store, calendar: calendar, openSettings: openSettings)
         )
     }
 
