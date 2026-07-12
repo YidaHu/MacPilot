@@ -1,0 +1,30 @@
+native-macos/Tests/MacPilotVoiceTests/VoicePresentationTests.swift
+  s_895396b36ea4cf::t_c05f42e79bef91 5-31
+native-macos/Sources/MacPilotApp/main.swift
+  s_895396b36ea4cf::t_eb4790d0d05fbe 19,33,65,78
+native-macos/Sources/MacPilotApp/VoiceStore.swift
+  s_895396b36ea4cf::t_62825df3884d76 129-133,225,231,235-239,241,260-262,272-274
+  s_895396b36ea4cf::t_3b5a628acd414f 14,27,36-40,56,76,94-98,124-128,134-136,180-182,205,223-224,240,242-259,263,268-271,275-285,485
+native-macos/Sources/MacPilotVoice/VoicePresentation.swift
+  s_895396b36ea4cf::t_c7b3dbac6eb14e 84-129
+native-macos/Sources/MacPilotApp/FloatingVoiceCapsuleView.swift
+  s_895396b36ea4cf::t_eb4790d0d05fbe 1-143
+native-macos/Sources/MacPilotApp/FloatingVoiceCapsuleController.swift
+  s_895396b36ea4cf::t_eb4790d0d05fbe 1-198
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "784d30d7b3b0ceabe604351c92d7fb807ed2f259",
+  "prompts": {},
+  "sessions": {
+    "s_895396b36ea4cf": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f54e6-6b50-7533-9eea-f7b602d60720",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "YidaHu <huyidada@gmail.com>"
+    }
+  }
+}
