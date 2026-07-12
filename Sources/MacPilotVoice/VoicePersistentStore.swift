@@ -114,6 +114,19 @@ public final class VoicePersistentStore: @unchecked Sendable {
         }
     }
 
+    public func recordMigration(version: String) throws {
+        try perform {
+            let request = NSFetchRequest<NSManagedObject>(entityName: "MigrationRecord")
+            request.predicate = NSPredicate(format: "version == %@", version)
+            request.fetchLimit = 1
+            guard try container.viewContext.count(for: request) == 0 else { return }
+            let migration = NSEntityDescription.insertNewObject(forEntityName: "MigrationRecord", into: container.viewContext)
+            migration.setValue(version, forKey: "version")
+            migration.setValue(Date(), forKey: "createdAt")
+            try container.viewContext.save()
+        }
+    }
+
     public func importLegacy(history: [VoiceHistoryEntry], dictionary: [VoiceDictionaryEntry], migrationVersion: String) throws {
         try perform {
             let context = container.viewContext

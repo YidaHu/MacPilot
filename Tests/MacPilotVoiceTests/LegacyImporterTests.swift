@@ -3,6 +3,28 @@ import XCTest
 @testable import MacPilotVoice
 
 final class LegacyImporterTests: XCTestCase {
+    func testSettingsV2ImportsStructuredFieldsAfterV1WithoutDuplicatingHistory() throws {
+        let fixture = try makeFixture()
+        defer { try? FileManager.default.removeItem(at: fixture.directory) }
+        let store = try VoicePersistentStore(inMemory: true)
+        let keychain = KeychainStore(service: "com.huyida.macpilot.voice.v2-tests.\(UUID().uuidString)")
+        defer { try? keychain.delete(account: "stt.glm-asr"); try? keychain.delete(account: "llm.zhipu") }
+        let importer = LegacyOpenTypelessImporter(store: store, keychain: keychain)
+        _ = try importer.importData(from: fixture.directory)
+
+        let settings = try importer.importVoiceUISettings(from: fixture.directory)
+
+        XCTAssertTrue(settings.structuredDictationEnabled)
+        XCTAssertEqual(settings.structuredDictationPrompt, "按主题忠实整理")
+        XCTAssertFalse(settings.alreadyImported)
+        XCTAssertEqual(try store.history(limit: 10).count, 1)
+        XCTAssertTrue(try store.hasMigration(version: LegacyOpenTypelessImporter.voiceUIMigrationVersion))
+
+        let second = try importer.importVoiceUISettings(from: fixture.directory)
+        XCTAssertTrue(second.alreadyImported)
+        XCTAssertEqual(try store.history(limit: 10).count, 1)
+    }
+
     func testImportsSettingsHistoryDictionaryAndSecretsWithoutMutatingSource() throws {
         let fixture = try makeFixture()
         defer { try? FileManager.default.removeItem(at: fixture.directory) }
@@ -49,7 +71,8 @@ final class LegacyImporterTests: XCTestCase {
             "stt_provider": "glm-asr", "stt_api_key": "dummy-stt-key", "stt_language": "zh",
             "stt_custom_base_url": "http://127.0.0.1:8000/v1", "stt_custom_model": "local-whisper",
             "llm_provider": "zhipu", "llm_api_key": "dummy-llm-key", "llm_base_url": "https://example.test/v1",
-            "llm_model": "glm-test", "hotkey": "Option+/", "hotkey_mode": "toggle", "polish_enabled": true
+            "llm_model": "glm-test", "hotkey": "Option+/", "hotkey_mode": "toggle", "polish_enabled": true,
+            "structured_dictation_enabled": true, "polish_custom_prompt": "按主题忠实整理"
         ]]
         try JSONSerialization.data(withJSONObject: settings).write(to: directory.appendingPathComponent("settings.json"))
 

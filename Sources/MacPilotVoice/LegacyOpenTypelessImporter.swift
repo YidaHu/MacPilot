@@ -21,6 +21,12 @@ public struct LegacyImportSummary: Equatable, Sendable {
     public let alreadyImported: Bool
 }
 
+public struct LegacyVoiceUISettings: Equatable, Sendable {
+    public let structuredDictationEnabled: Bool
+    public let structuredDictationPrompt: String
+    public let alreadyImported: Bool
+}
+
 public enum LegacyImportError: Error {
     case missingSettings
     case corruptSettings
@@ -29,6 +35,7 @@ public enum LegacyImportError: Error {
 
 public final class LegacyOpenTypelessImporter {
     public static let migrationVersion = "opentypeless-v1"
+    public static let voiceUIMigrationVersion = "opentypeless-voice-ui-v2"
     private let store: VoicePersistentStore
     private let keychain: KeychainStore
 
@@ -64,6 +71,34 @@ public final class LegacyOpenTypelessImporter {
         return LegacyImportSummary(historyCount: records.history.count, dictionaryCount: records.dictionary.count, settings: parsed.settings, alreadyImported: false)
     }
 
+    public func importVoiceUISettings(from sourceDirectory: URL) throws -> LegacyVoiceUISettings {
+        if try store.hasMigration(version: Self.voiceUIMigrationVersion) {
+            return LegacyVoiceUISettings(
+                structuredDictationEnabled: false,
+                structuredDictationPrompt: StructuredDictationSettings.defaultPrompt,
+                alreadyImported: true
+            )
+        }
+
+        let copied = try copySettingsFile(from: sourceDirectory)
+        defer { try? FileManager.default.removeItem(at: copied.directory) }
+        guard let root = try? JSONSerialization.jsonObject(with: Data(contentsOf: copied.settings)) as? [String: Any],
+              let app = root["app_config"] as? [String: Any] else {
+            throw LegacyImportError.corruptSettings
+        }
+        let rawPrompt = app["polish_custom_prompt"] as? String ?? ""
+        let sanitized = StructuredDictationSettings(
+            enabled: app["structured_dictation_enabled"] as? Bool ?? false,
+            prompt: rawPrompt
+        )
+        try store.recordMigration(version: Self.voiceUIMigrationVersion)
+        return LegacyVoiceUISettings(
+            structuredDictationEnabled: sanitized.enabled,
+            structuredDictationPrompt: sanitized.prompt,
+            alreadyImported: false
+        )
+    }
+
     private var emptySettings: ImportedVoiceSettings {
         ImportedVoiceSettings(sttProvider: "", sttLanguage: "", sttCustomBaseURL: "", sttCustomModel: "", llmProvider: "", llmBaseURL: "", llmModel: "", hotkey: "", hotkeyMode: "", polishEnabled: false)
     }
@@ -89,6 +124,16 @@ public final class LegacyOpenTypelessImporter {
             copiedDB = destination
         }
         return (directory, copiedSettings, copiedDB)
+    }
+
+    private func copySettingsFile(from source: URL) throws -> (directory: URL, settings: URL) {
+        let settings = source.appendingPathComponent("settings.json")
+        guard FileManager.default.fileExists(atPath: settings.path) else { throw LegacyImportError.missingSettings }
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent("MacPilotLegacyUI-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        let copied = directory.appendingPathComponent("settings.json")
+        try FileManager.default.copyItem(at: settings, to: copied)
+        return (directory, copied)
     }
 
     private func parseSettings(at url: URL) throws -> (settings: ImportedVoiceSettings, sttKey: String, llmKey: String) {
