@@ -1,0 +1,21 @@
+docs/superpowers/plans/2026-07-12-macpilot-floating-voice-implementation.md
+  s_895396b36ea4cf::t_50517fa52c3f23 585,587-590,593,599
+  s_895396b36ea4cf::t_4d6d1e70de1ed7 1-392,394,396,454-489,491-509,511-513,515,517,519-521,523-584,586,591-592,594-598,600-657
+  s_895396b36ea4cf::t_7a7130daafccf1 393,395,397-453,490,510,514,516,518,522
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "d6cafbac45bcec57f22eeceb196a6a260fcca470",
+  "prompts": {},
+  "sessions": {
+    "s_895396b36ea4cf": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f54e6-6b50-7533-9eea-f7b602d60720",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "YidaHu <huyidada@gmail.com>"
+    }
+  }
+}
