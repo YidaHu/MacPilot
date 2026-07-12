@@ -1,0 +1,25 @@
+.github/scripts/publish-signpath-windows-release.ps1
+  s_6c0f1fe6f6331a::t_fb4a800ef62f18 1-122
+.github/workflows/release-windows-signpath.yml
+  s_6c0f1fe6f6331a::t_f3e0d22b63e018 1-157
+docs/release-signing.md
+  s_6c0f1fe6f6331a::t_54da560a99798a 44-57
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "8a9748e52d021b5cda5f2321a98142e6393fc2af",
+  "prompts": {},
+  "sessions": {
+    "s_6c0f1fe6f6331a": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f44c3-ec9e-7213-9a98-f32d9114d906",
+        "model": "unknown"
+      },
+      "human_author": "tover0314-w <tover0314-w@users.noreply.github.com>"
+    }
+  },
+  "attestation_metadata": {},
+  "remote_transcripts": {}
+}

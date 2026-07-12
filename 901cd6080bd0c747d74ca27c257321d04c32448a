@@ -1,0 +1,23 @@
+src-tauri/Cargo.toml
+  s_ee665445cb0670::t_e327f1c5c16a54 53
+src-tauri/src/native_hotkey.rs
+  s_ee665445cb0670::t_364181d9af0ac7 636,796-813
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "901cd6080bd0c747d74ca27c257321d04c32448a",
+  "prompts": {},
+  "sessions": {
+    "s_ee665445cb0670": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f47a6-8d34-7643-b642-df29f467686d",
+        "model": "unknown"
+      },
+      "human_author": "tover0314-w <tover0314-w@users.noreply.github.com>"
+    }
+  },
+  "attestation_metadata": {},
+  "remote_transcripts": {}
+}

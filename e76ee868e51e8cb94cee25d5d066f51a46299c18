@@ -1,0 +1,21 @@
+.github/workflows/release-windows-signpath.yml
+  s_6c0f1fe6f6331a::t_ce8fa100175d31 10-17,47,63-65,158
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "e76ee868e51e8cb94cee25d5d066f51a46299c18",
+  "prompts": {},
+  "sessions": {
+    "s_6c0f1fe6f6331a": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f44c3-ec9e-7213-9a98-f32d9114d906",
+        "model": "unknown"
+      },
+      "human_author": "tover0314-w <tover0314-w@users.noreply.github.com>"
+    }
+  },
+  "attestation_metadata": {},
+  "remote_transcripts": {}
+}
