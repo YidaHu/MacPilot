@@ -1,0 +1,35 @@
+native-macos/scripts/build-app.sh
+  s_895396b36ea4cf::t_2d13d53d26ec2f 1-21
+native-macos/Sources/MacPilotMetrics/MacPilotMetrics.swift
+  s_895396b36ea4cf::t_2d13d53d26ec2f 1-5
+native-macos/Sources/MacPilotApp/main.swift
+  s_895396b36ea4cf::t_2d13d53d26ec2f 1-12
+native-macos/Tests/MacPilotCoreTests/PlaceholderTests.swift
+  s_895396b36ea4cf::t_2d13d53d26ec2f 1-8
+native-macos/Package.swift
+  s_895396b36ea4cf::t_2d13d53d26ec2f 1-20
+native-macos/Sources/MacPilotCore/MacPilotCore.swift
+  s_895396b36ea4cf::t_2d13d53d26ec2f 1-3
+native-macos/Tests/MacPilotMetricsTests/PlaceholderTests.swift
+  s_895396b36ea4cf::t_2d13d53d26ec2f 1-8
+native-macos/Resources/Info.plist
+  s_895396b36ea4cf::t_2d13d53d26ec2f 1-28
+native-macos/.gitignore
+  s_895396b36ea4cf::t_e71848b0566b56 1-4
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "801598b69e136fd16bd0fc79d51146360ab00208",
+  "prompts": {},
+  "sessions": {
+    "s_895396b36ea4cf": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f54e6-6b50-7533-9eea-f7b602d60720",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "YidaHu <huyidada@gmail.com>"
+    }
+  }
+}
