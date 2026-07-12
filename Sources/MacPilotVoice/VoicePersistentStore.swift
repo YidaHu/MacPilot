@@ -13,6 +13,10 @@ public struct VoiceScene: Equatable, Sendable {
     public let prompt: String
 }
 
+public enum VoicePersistentStoreError: Error, Equatable {
+    case historyNotFound
+}
+
 public final class VoicePersistentStore: @unchecked Sendable {
     private let container: NSPersistentContainer
 
@@ -58,6 +62,22 @@ public final class VoicePersistentStore: @unchecked Sendable {
             object.setValue(entry.rawText, forKey: "rawText")
             object.setValue(entry.polishedText, forKey: "polishedText")
             object.setValue(entry.duration, forKey: "duration")
+            try container.viewContext.save()
+        }
+    }
+
+    public func updateHistory(id: UUID, polishedText: String) throws {
+        try perform {
+            guard let object = try historyObject(id: id) else { throw VoicePersistentStoreError.historyNotFound }
+            object.setValue(polishedText, forKey: "polishedText")
+            try container.viewContext.save()
+        }
+    }
+
+    public func deleteHistory(id: UUID) throws {
+        try perform {
+            guard let object = try historyObject(id: id) else { throw VoicePersistentStoreError.historyNotFound }
+            container.viewContext.delete(object)
             try container.viewContext.save()
         }
     }
@@ -115,6 +135,13 @@ public final class VoicePersistentStore: @unchecked Sendable {
         var result: Result<T, Error>!
         container.viewContext.performAndWait { result = Result { try body() } }
         return try result.get()
+    }
+
+    private func historyObject(id: UUID) throws -> NSManagedObject? {
+        let request = NSFetchRequest<NSManagedObject>(entityName: "HistoryEntry")
+        request.predicate = NSPredicate(format: "id == %@", id as NSUUID)
+        request.fetchLimit = 1
+        return try container.viewContext.fetch(request).first
     }
 
     private static func defaultStoreURL() -> URL {

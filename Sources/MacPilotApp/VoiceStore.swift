@@ -106,6 +106,47 @@ final class VoiceStore: ObservableObject {
 
     func clearError() { errorMessage = nil }
 
+    func copyHistory(_ entry: VoiceHistoryEntry) {
+        NSPasteboard.general.clearContents()
+        _ = NSPasteboard.general.setString(entry.polishedText, forType: .string)
+    }
+
+    func pasteHistory(_ entry: VoiceHistoryEntry) {
+        guard stage == .idle else { return }
+        Task {
+            do { try await AccessibleTextOutput().output(entry.polishedText) }
+            catch { errorMessage = describe(error) }
+        }
+    }
+
+    func repolishHistory(_ entry: VoiceHistoryEntry) {
+        guard stage == .idle, let persistentStore else { return }
+        do {
+            let polisher = try makePolisher()
+            stage = .polishing
+            errorMessage = nil
+            Task { @MainActor [weak self] in
+                guard let self else { return }
+                do {
+                    let polished = try await polisher.polish(entry.rawText, context: VoiceContext())
+                        .trimmingCharacters(in: .whitespacesAndNewlines)
+                    guard !polished.isEmpty else { throw VoicePipelineError.emptyTranscript }
+                    try persistentStore.updateHistory(id: entry.id, polishedText: polished)
+                    self.reloadHistory()
+                } catch { self.errorMessage = self.describe(error) }
+                self.stage = .idle
+            }
+        } catch { errorMessage = describe(error) }
+    }
+
+    func deleteHistory(_ entry: VoiceHistoryEntry) {
+        guard let persistentStore else { return }
+        do {
+            try persistentStore.deleteHistory(id: entry.id)
+            reloadHistory()
+        } catch { errorMessage = "删除历史记录失败：\(error.localizedDescription)" }
+    }
+
     func shutdown() {
         hotKeyController?.unregister()
         Task { await pipeline?.abort() }

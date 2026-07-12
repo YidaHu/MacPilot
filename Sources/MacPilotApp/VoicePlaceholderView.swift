@@ -85,8 +85,15 @@ struct VoiceView: View {
             } else {
                 ForEach(Array(store.history.prefix(6)), id: \.id) { item in
                     VStack(alignment: .leading, spacing: 4) {
-                        Text(item.polishedText).font(.callout).lineLimit(2)
-                        Text(item.createdAt, style: .relative).font(.caption2).foregroundColor(.secondary)
+                        Text(item.polishedText).font(.callout).lineLimit(3)
+                        HStack {
+                            Text(item.createdAt, style: .relative).font(.caption2).foregroundColor(.secondary)
+                            Spacer()
+                            historyButton("doc.on.doc", help: "复制") { store.copyHistory(item) }
+                            historyButton("arrow.up.doc", help: "重新粘贴") { store.pasteHistory(item) }
+                            historyButton("wand.and.stars", help: "重新润色") { store.repolishHistory(item) }
+                            historyButton("trash", help: "删除") { store.deleteHistory(item) }
+                        }
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     if item.id != store.history.prefix(6).last?.id { Divider() }
@@ -96,6 +103,13 @@ struct VoiceView: View {
         .padding(14)
         .background(Color(nsColor: .controlBackgroundColor).opacity(0.65))
         .clipShape(RoundedRectangle(cornerRadius: 14))
+    }
+
+    private func historyButton(_ symbol: String, help: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) { Image(systemName: symbol).font(.caption) }
+            .buttonStyle(.plain)
+            .foregroundColor(.secondary)
+            .help(help)
     }
 }
 

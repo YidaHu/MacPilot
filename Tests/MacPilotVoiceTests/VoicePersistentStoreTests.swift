@@ -12,4 +12,16 @@ final class VoicePersistentStoreTests: XCTestCase {
 
         XCTAssertEqual(try store.history(limit: 1), [newer])
     }
+
+    func testHistoryCanBeUpdatedAndDeletedByID() async throws {
+        let store = try VoicePersistentStore(inMemory: true)
+        let entry = VoiceHistoryEntry(rawText: "raw", polishedText: "first", duration: 1)
+        try await store.save(entry)
+
+        try store.updateHistory(id: entry.id, polishedText: "second")
+        XCTAssertEqual(try store.history(limit: 10).first?.polishedText, "second")
+
+        try store.deleteHistory(id: entry.id)
+        XCTAssertTrue(try store.history(limit: 10).isEmpty)
+    }
 }
