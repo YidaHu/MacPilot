@@ -1,0 +1,44 @@
+native-macos/README.md
+  s_895396b36ea4cf::t_dabc1af9fecb45 17,19,78-80
+native-macos/Sources/MacPilotSystemActions/SystemToolsStore.swift
+  s_895396b36ea4cf::t_d4b43076954e1e 1-60,62-110
+  s_895396b36ea4cf::t_0a2129ec66cce1 61
+native-macos/Sources/MacPilotApp/OverviewView.swift
+  s_895396b36ea4cf::t_999ef4b25deadb 4,11-13,84-89,91-94,96,204,207-208,210-218,220
+native-macos/Sources/MacPilotApp/MenuBarController.swift
+  s_895396b36ea4cf::t_999ef4b25deadb 5,17,36
+native-macos/Sources/MacPilotApp/RootPanelView.swift
+  s_895396b36ea4cf::t_999ef4b25deadb 4,11-12,30,34
+native-macos/Sources/MacPilotApp/ToolsView.swift
+  s_895396b36ea4cf::t_999ef4b25deadb 2-3,8-12,14-18,24-25,28,31-48,50-51,54,56-57,59,62-63,65-83
+native-macos/Sources/MacPilotApp/SettingsView.swift
+  s_895396b36ea4cf::t_999ef4b25deadb 5,10,20,38,96-99
+native-macos/Tests/MacPilotSystemActionsTests/SystemActionControllerTests.swift
+  s_895396b36ea4cf::t_bf09dc5c333ca0 46,48
+  s_895396b36ea4cf::t_49d4daa871821c 40-45,47,49
+native-macos/Sources/MacPilotSystemActions/SystemActionController.swift
+  s_895396b36ea4cf::t_4f5ce1d5f5749d 38
+native-macos/Tests/MacPilotSystemActionsTests/SystemToolsStoreTests.swift
+  s_895396b36ea4cf::t_3186eae66a05f7 16-17,35,38
+  s_895396b36ea4cf::t_e88ce5e8527ab6 1-15,18-34,36-37,39-70
+native-macos/Sources/MacPilotApp/main.swift
+  s_895396b36ea4cf::t_999ef4b25deadb 6,15-16,27-28,38-39,58-59,68-69
+native-macos/Sources/MacPilotCore/AppPresentation.swift
+  s_895396b36ea4cf::t_999ef4b25deadb 58-59
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "3ee5d711fd181abd56e49643f1f6ff2da4f3dff7",
+  "prompts": {},
+  "sessions": {
+    "s_895396b36ea4cf": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f54e6-6b50-7533-9eea-f7b602d60720",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "YidaHu <huyidada@gmail.com>"
+    }
+  }
+}
