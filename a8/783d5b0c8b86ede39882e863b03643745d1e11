@@ -1,0 +1,34 @@
+native-macos/Sources/MacPilotFan/FanHelperClient.swift
+  s_895396b36ea4cf::t_faf4796d715b35 1-87
+.gitignore
+  s_895396b36ea4cf::t_7936ccef50ea94 21
+native-macos/Tests/MacPilotFanTests/FanHelperClientTests.swift
+  s_895396b36ea4cf::t_9cb5ef37138f3b 1-51
+native-macos/scripts/build-app.sh
+  s_895396b36ea4cf::t_c334176bd90071 19,33
+  s_895396b36ea4cf::t_7936ccef50ea94 5-11,17-18,21,26,29-32,36-37
+  s_895396b36ea4cf::t_77bdef24c0e5ad 20
+native-macos/Sources/MacPilotFan/FanHelperInstaller.swift
+  s_895396b36ea4cf::t_aa605071fdd38f 23-35
+  s_895396b36ea4cf::t_7936ccef50ea94 1-22,36-45
+native-macos/scripts/build-fan-helper.sh
+  s_895396b36ea4cf::t_7936ccef50ea94 1-24,26,28-30,32-38
+  s_895396b36ea4cf::t_d109d9d2c491a4 25,27
+  s_895396b36ea4cf::t_aa605071fdd38f 31
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "a8783d5b0c8b86ede39882e863b03643745d1e11",
+  "prompts": {},
+  "sessions": {
+    "s_895396b36ea4cf": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f54e6-6b50-7533-9eea-f7b602d60720",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "YidaHu <huyidada@gmail.com>"
+    }
+  }
+}
