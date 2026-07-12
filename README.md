@@ -15,8 +15,12 @@ MacPilot 是面向当前 Intel MacBook Pro 的原生 macOS 菜单栏工具。本
 - 受签名限制的特权助手、5 秒短租约、失联自动恢复和独立恢复工具。
 - EventKit 会议提前 10 分钟火箭提醒，以及设置中的开关与测试入口。
 - 省电、保持唤醒、锁屏、保持亮屏、清洁屏幕/键盘、深色模式、隐藏桌面、隐藏程序坞和清倒废纸篓快捷工具。
+- OpenTypeless 原生语音链路：全局快捷键、录音电平、16 kHz 单声道转换、转写、AI 润色、自动粘贴和历史记录。
+- GLM-ASR、OpenAI Whisper、Groq Whisper、SiliconFlow 和 Custom Whisper；密钥只保存在 macOS 钥匙串。
+- OpenTypeless 设置、历史和词典的复制式一次性迁移；旧目录不会被修改或删除。
+- 历史记录复制、重新粘贴、重新润色和删除。
 
-语音迁移尚未开始；语音页仍明确显示后续阶段，不呈现模拟成功状态。
+Deepgram、AssemblyAI 和火山引擎豆包属于实时 WebSocket 转写，尚未在当前录音后文件转写架构中开放。界面不会把这三家显示为可用服务。
 
 ## 构建与测试
 
@@ -30,6 +34,41 @@ open build/MacPilot.app
 ```
 
 构建物：`/Users/huyida/USERPRO/code/macpilot-native/native-macos/build/MacPilot.app`
+
+安装到“应用程序”目录（可选）：
+
+```bash
+pkill -x MacPilotApp || true
+ditto build/MacPilot.app /Applications/MacPilot.app
+open /Applications/MacPilot.app
+```
+
+首次使用语音时，macOS 会分别请求麦克风和辅助功能权限。麦克风用于录音；辅助功能只用于向当前输入框发送一次受约束的 `Command-V`。粘贴完成后会恢复原剪贴板；若用户期间复制了新内容，则不会覆盖新内容。
+
+## 语音迁移与数据位置
+
+- 旧数据源：`~/Library/Application Support/com.opentypeless.app`。
+- MacPilot 语音数据库：`~/Library/Application Support/MacPilot/Voice.sqlite`。
+- API Key：钥匙串服务 `com.huyida.macpilot.voice`。
+- 迁移使用临时副本读取 JSON/SQLite/WAL，不修改旧目录；迁移标记保证重复启动不会重复导入。
+- 当前实机迁移结果：58 条历史记录、0 个词典条目、1 条迁移标记。
+
+## 回滚
+
+1. 退出 MacPilot；如风扇处于手动模式，等待 5 秒租约自动恢复，或运行 `bash scripts/restore-fans-auto.sh`。
+2. 重新打开 `/Applications/OpenTypeless.app`。旧设置、数据库和录音目录仍保留，可继续使用。
+3. 如需恢复旧火箭提醒，重新启用此前保留的 RocketReminder LaunchAgent；避免与 MacPilot 同时启用，以免重复提醒。
+4. 删除 MacPilot 不会删除 OpenTypeless 数据。若要删除 MacPilot 自己的历史或钥匙串项目，应先单独备份并明确操作。
+
+## 当前发布检查
+
+- `swift test`：全量通过。
+- Debug 与 Release 构建：通过。
+- App 与特权助手签名验证：通过。
+- 实机启动：单一 `MacPilotApp` 进程保持运行。
+- 启动日志：无 error/fault；钥匙串和迁移在后台执行。
+- 语音迁移：实机完成且幂等，密钥存在性已验证但未输出密钥内容。
+- 尚未完成：三家实时 WebSocket STT、Apple 公证、24 小时睡眠/唤醒浸泡测试，以及用户真人语音端到端验收。
 
 ## 第一阶段验证记录
 
