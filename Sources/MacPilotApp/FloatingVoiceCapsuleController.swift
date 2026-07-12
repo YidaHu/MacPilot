@@ -1,5 +1,6 @@
 import AppKit
 import Combine
+import MacPilotCore
 import MacPilotVoice
 import SwiftUI
 
@@ -24,7 +25,7 @@ final class FloatingVoiceCapsuleController: NSObject {
     private var isPositioned = false
     private var dragOrigin: NSPoint?
 
-    init(store: VoiceStore, defaults: UserDefaults = .standard, openSettings: @escaping () -> Void) {
+    init(store: VoiceStore, defaults: UserDefaults = .standard, openSettings: @escaping (SettingsSection) -> Void) {
         self.store = store
         self.defaults = defaults
         panel = CapsulePanel(
@@ -46,7 +47,7 @@ final class FloatingVoiceCapsuleController: NSObject {
             rootView: FloatingVoiceCapsuleView(
                 store: store,
                 onDrag: { [weak self] translation, ended in self?.drag(translation: translation, ended: ended) },
-                openSettings: openSettings
+                openSettings: { openSettings(store.errorSettingsSection) }
             )
         )
         bindState()

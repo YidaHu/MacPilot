@@ -6,7 +6,14 @@ import MacPilotSystemActions
 import SwiftUI
 
 @MainActor
+final class SettingsNavigation: ObservableObject {
+    @Published var selection: SettingsSection = .general
+}
+
+@MainActor
 final class SettingsWindowController: NSWindowController {
+    private let navigation = SettingsNavigation()
+
     init(calendar: CalendarReminderController, fans: FanStore, tools: SystemToolsStore, voice: VoiceStore) {
         let window = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 760, height: 520),
@@ -17,13 +24,18 @@ final class SettingsWindowController: NSWindowController {
         window.title = "MacPilot 设置"
         window.minSize = NSSize(width: 680, height: 460)
         window.isReleasedWhenClosed = false
-        window.contentViewController = NSHostingController(rootView: SettingsView(calendar: calendar, fans: fans, tools: tools, voice: voice))
+        window.contentViewController = NSHostingController(rootView: SettingsView(calendar: calendar, fans: fans, tools: tools, voice: voice, navigation: navigation))
         super.init(window: window)
     }
 
     required init?(coder: NSCoder) { nil }
 
     func show() {
+        show(section: nil)
+    }
+
+    func show(section: SettingsSection?) {
+        if let section { navigation.selection = section }
         guard let window else { return }
         window.center()
         showWindow(nil)
@@ -37,7 +49,7 @@ struct SettingsView: View {
     @ObservedObject var fans: FanStore
     @ObservedObject var tools: SystemToolsStore
     @ObservedObject var voice: VoiceStore
-    @State private var selection: SettingsSection = .general
+    @ObservedObject var navigation: SettingsNavigation
     @State private var sttKey = ""
     @State private var llmKey = ""
 
@@ -50,7 +62,7 @@ struct SettingsView: View {
                     .padding(.bottom, 8)
                 ForEach(SettingsSection.allCases) { section in
                     Button {
-                        selection = section
+                        navigation.selection = section
                     } label: {
                         HStack {
                             Text(section.title)
@@ -107,6 +119,11 @@ struct SettingsView: View {
                         detail: "注册全局快捷键并允许录音、转写和自动粘贴",
                         isOn: Binding(get: { voice.isEnabled }, set: { voice.setEnabled($0) })
                     )
+                    SettingToggleRow(
+                        title: "空闲时隐藏悬浮胶囊",
+                        detail: "录音和处理时始终显示；关闭后保留一个可拖动的麦克风按钮",
+                        isOn: Binding(get: { voice.capsuleAutoHide }, set: { voice.setCapsuleAutoHide($0) })
+                    )
                     HStack {
                         Text("转写服务").fontWeight(.medium)
                         Spacer()
@@ -140,8 +157,41 @@ struct SettingsView: View {
                     SettingToggleRow(
                         title: "AI 润色",
                         detail: "转写完成后整理标点、语气和表达；关闭时直接输出原始转写",
-                        isOn: $voice.polishEnabled
+                        isOn: Binding(get: { voice.polishEnabled }, set: { voice.setPolishEnabled($0) })
                     )
+                    SettingToggleRow(
+                        title: "启用结构化口述",
+                        detail: "长口述按内容整理标题、段落和列表；短内容不强制标题",
+                        isOn: Binding(get: { voice.structuredDictationEnabled }, set: { voice.setStructuredDictationEnabled($0) })
+                    )
+                    if voice.structuredDictationEnabled {
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack {
+                                Text("结构化口述 Prompt").fontWeight(.medium)
+                                Spacer()
+                                Button("恢复默认") { voice.resetStructuredPrompt() }
+                            }
+                            TextEditor(text: $voice.structuredDictationPrompt)
+                                .font(.system(size: 12))
+                                .frame(minHeight: 112)
+                                .padding(6)
+                                .background(Color(nsColor: .textBackgroundColor))
+                                .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.secondary.opacity(0.22)))
+                                .onChange(of: voice.structuredDictationPrompt) { value in
+                                    if value.count > 2_000 { voice.structuredDictationPrompt = String(value.prefix(2_000)) }
+                                }
+                            HStack {
+                                Text("Prompt 只能调整结构偏好，不能覆盖不捏造事实等安全规则。")
+                                Spacer()
+                                Text("\(voice.structuredDictationPrompt.count) / 2000")
+                            }
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                        }
+                        .padding(12)
+                        .background(Color(nsColor: .controlBackgroundColor))
+                        .clipShape(RoundedRectangle(cornerRadius: 11))
+                    }
                     LabeledTextField(title: "服务标识", value: $voice.llmProvider, placeholder: "zhipu")
                     LabeledTextField(title: "API Base URL", value: $voice.llmBaseURL, placeholder: "https://…/v1")
                     LabeledTextField(title: "模型", value: $voice.llmModel, placeholder: "模型名称")
@@ -192,6 +242,8 @@ struct SettingsView: View {
             }
         }
     }
+
+    private var selection: SettingsSection { navigation.selection }
 
     private func openPrivacySettings(_ pane: String) {
         if let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?\(pane)") {

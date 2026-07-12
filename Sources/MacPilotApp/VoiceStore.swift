@@ -1,5 +1,6 @@
 import AppKit
 import Foundation
+import MacPilotCore
 import MacPilotVoice
 
 @MainActor
@@ -12,6 +13,8 @@ final class VoiceStore: ObservableObject {
     @Published private(set) var hasSTTKey = false
     @Published private(set) var hasLLMKey = false
     @Published private(set) var capsuleState: CapsuleDisplayState = .idle
+    @Published private(set) var pendingOutputText: String?
+    @Published private(set) var errorSettingsSection: SettingsSection = .voice
 
     @Published var isEnabled: Bool
     @Published var sttProvider: String
@@ -25,6 +28,8 @@ final class VoiceStore: ObservableObject {
     @Published var hotkeyMode: String
     @Published var polishEnabled: Bool
     @Published var capsuleAutoHide: Bool
+    @Published var structuredDictationEnabled: Bool
+    @Published var structuredDictationPrompt: String
 
     private let defaults: UserDefaults
     private let keychain: KeychainStore
@@ -38,6 +43,9 @@ final class VoiceStore: ObservableObject {
     private var recordingTimer: Task<Void, Never>?
     private var completionTask: Task<Void, Never>?
     private var operationTask: Task<Void, Never>?
+    private var errorCollapseTask: Task<Void, Never>?
+    private var processingWarning: VoicePipelineWarning?
+    private var lastProcessedText: String?
 
     init(defaults: UserDefaults = .standard, keychain: KeychainStore = KeychainStore()) {
         self.defaults = defaults
@@ -54,6 +62,8 @@ final class VoiceStore: ObservableObject {
         hotkeyMode = defaults.string(forKey: Keys.hotkeyMode) ?? "toggle"
         polishEnabled = defaults.object(forKey: Keys.polishEnabled) as? Bool ?? true
         capsuleAutoHide = defaults.object(forKey: Keys.capsuleAutoHide) as? Bool ?? true
+        structuredDictationEnabled = defaults.object(forKey: Keys.structuredEnabled) as? Bool ?? false
+        structuredDictationPrompt = defaults.string(forKey: Keys.structuredPrompt) ?? StructuredDictationSettings.defaultPrompt
 
         persistentStore = nil
         bootstrap()
@@ -96,6 +106,26 @@ final class VoiceStore: ObservableObject {
         defaults.set(autoHide, forKey: Keys.capsuleAutoHide)
     }
 
+    func setStructuredDictationEnabled(_ enabled: Bool) {
+        structuredDictationEnabled = enabled
+        if enabled { polishEnabled = true }
+        defaults.set(enabled, forKey: Keys.structuredEnabled)
+        defaults.set(polishEnabled, forKey: Keys.polishEnabled)
+        rebuildRuntime()
+    }
+
+    func setPolishEnabled(_ enabled: Bool) {
+        polishEnabled = enabled
+        if !enabled { structuredDictationEnabled = false }
+        defaults.set(polishEnabled, forKey: Keys.polishEnabled)
+        defaults.set(structuredDictationEnabled, forKey: Keys.structuredEnabled)
+        rebuildRuntime()
+    }
+
+    func resetStructuredPrompt() {
+        structuredDictationPrompt = StructuredDictationSettings.defaultPrompt
+    }
+
     func saveConfiguration() {
         defaults.set(sttProvider, forKey: Keys.sttProvider)
         defaults.set(sttLanguage, forKey: Keys.sttLanguage)
@@ -107,6 +137,10 @@ final class VoiceStore: ObservableObject {
         defaults.set(hotkey, forKey: Keys.hotkey)
         defaults.set(hotkeyMode, forKey: Keys.hotkeyMode)
         defaults.set(polishEnabled, forKey: Keys.polishEnabled)
+        let structured = StructuredDictationSettings(enabled: structuredDictationEnabled, prompt: structuredDictationPrompt)
+        structuredDictationPrompt = structured.prompt
+        defaults.set(structured.enabled, forKey: Keys.structuredEnabled)
+        defaults.set(structured.prompt, forKey: Keys.structuredPrompt)
         errorMessage = nil
         reloadKeysAndRebuild()
     }
@@ -119,7 +153,34 @@ final class VoiceStore: ObservableObject {
         saveKey(value, account: "llm.\(llmProvider)")
     }
 
-    func clearError() { errorMessage = nil }
+    func clearError() {
+        errorMessage = nil
+        errorCollapseTask?.cancel()
+        if stage == .idle {
+            presentationAdapter.resetToIdle()
+            capsuleState = presentationAdapter.displayState
+        }
+    }
+
+    func copyPendingOutput() {
+        guard let pendingOutputText else { return }
+        NSPasteboard.general.clearContents()
+        _ = NSPasteboard.general.setString(pendingOutputText, forType: .string)
+    }
+
+    func retryPendingOutput() {
+        guard let pendingOutputText else { return }
+        Task { [weak self] in
+            guard let store = self else { return }
+            do {
+                try await AccessibleTextOutput().output(pendingOutputText)
+                store.pendingOutputText = nil
+                store.clearError()
+            } catch {
+                store.showCapsuleError(store.describe(error), section: store.settingsSection(for: error))
+            }
+        }
+    }
 
     func cancelCurrentOperation() {
         operationTask?.cancel()
@@ -179,6 +240,7 @@ final class VoiceStore: ObservableObject {
         hotKeyController?.unregister()
         recordingTimer?.cancel()
         completionTask?.cancel()
+        errorCollapseTask?.cancel()
         operationTask?.cancel()
         Task { await pipeline?.abort() }
     }
@@ -200,10 +262,20 @@ final class VoiceStore: ObservableObject {
                 polisher: polisher,
                 output: AccessibleTextOutput(),
                 history: persistentStore,
+                configuration: .init(
+                    polishEnabled: polishEnabled,
+                    structuredDictation: .init(
+                        enabled: structuredDictationEnabled,
+                        prompt: structuredDictationPrompt
+                    )
+                ),
                 onTransition: { [weak self] state in
                     Task { @MainActor [weak self] in
                         self?.handleTransition(state)
                     }
+                },
+                onWarning: { [weak self] warning in
+                    Task { @MainActor [weak self] in self?.processingWarning = warning }
                 }
             )
             let mode = HotKeyMode(rawValue: hotkeyMode) ?? .toggle
@@ -234,9 +306,10 @@ final class VoiceStore: ObservableObject {
             } catch {
                 store.hotKeyController?.resetInteraction()
                 let message = store.describe(error)
-                store.errorMessage = message
-                store.presentationAdapter.markFailed(message)
-                store.capsuleState = store.presentationAdapter.displayState
+                if error as? AccessibleTextOutputError == .accessibilityPermissionRequired {
+                    store.pendingOutputText = store.lastProcessedText
+                }
+                store.showCapsuleError(message, section: store.settingsSection(for: error))
             }
             store.operationTask = nil
         }
@@ -245,6 +318,7 @@ final class VoiceStore: ObservableObject {
     private func handleTransition(_ state: VoicePipelineState) {
         stage = state.stage
         capsuleState = presentationAdapter.consume(state)
+        if state.stage == .outputting { lastProcessedText = state.outputText }
         if state.stage == .recording {
             if recordingStartedAt == nil { recordingStartedAt = Date() }
             startRecordingTimer()
@@ -253,13 +327,26 @@ final class VoiceStore: ObservableObject {
         }
         if state.stage == .idle {
             inputLevel = 0
-            if capsuleState == .complete {
+            if let warning = processingWarning {
+                processingWarning = nil
+                let message: String
+                switch warning {
+                case .processingFallback(.structured): message = "结构化口述失败，已输出原始转录"
+                case .processingFallback: message = "AI 润色失败，已输出原始转录"
+                }
+                errorSettingsSection = .artificialIntelligence
+                errorMessage = message
+                presentationAdapter.markFailed(message)
+                capsuleState = presentationAdapter.displayState
+                scheduleErrorCollapse()
+            } else if capsuleState == .complete {
                 completionTask?.cancel()
                 completionTask = Task { [weak self] in
                     try? await Task.sleep(nanoseconds: 1_200_000_000)
                     guard !Task.isCancelled, let store = self else { return }
                     store.presentationAdapter.resetToIdle()
                     store.capsuleState = store.presentationAdapter.displayState
+                    store.lastProcessedText = nil
                 }
             }
         }
@@ -297,7 +384,13 @@ final class VoiceStore: ObservableObject {
     private func makePolisher() throws -> any Polishing {
         guard polishEnabled else { return PassthroughPolisher() }
         let endpoint = try completionEndpoint(baseURL: llmBaseURL)
-        return OpenAICompatibleLLM(configuration: .init(endpoint: endpoint, model: llmModel, apiKey: llmAPIKey))
+        return OpenAICompatibleLLM(
+            configuration: .init(endpoint: endpoint, model: llmModel, apiKey: llmAPIKey),
+            promptOptions: .init(
+                structuredDictationEnabled: structuredDictationEnabled,
+                structuredDictationPrompt: structuredDictationPrompt
+            )
+        )
     }
 
     private func completionEndpoint(baseURL: String) throws -> URL {
@@ -320,19 +413,32 @@ final class VoiceStore: ObservableObject {
                 Result {
                     let store = try VoicePersistentStore()
                     var summary: LegacyImportSummary?
+                    var voiceUISettings: LegacyVoiceUISettings?
                     var migrationError: String?
                     if FileManager.default.fileExists(atPath: legacy.path) {
-                        do { summary = try LegacyOpenTypelessImporter(store: store, keychain: keychain).importData(from: legacy) }
+                        let importer = LegacyOpenTypelessImporter(store: store, keychain: keychain)
+                        do { summary = try importer.importData(from: legacy) }
                         catch { migrationError = "OpenTypeless 数据迁移失败" }
+                        do { voiceUISettings = try importer.importVoiceUISettings(from: legacy) }
+                        catch { migrationError = "OpenTypeless 语音界面设置迁移失败" }
                     }
                     let sttProvider = summary.flatMap { $0.alreadyImported ? nil : $0.settings.sttProvider } ?? currentSTTProvider
                     let llmProvider = summary.flatMap { $0.alreadyImported ? nil : $0.settings.llmProvider } ?? currentLLMProvider
+                    var keychainError = false
+                    let sttKey: String
+                    let llmKey: String
+                    do { sttKey = try keychain.string(account: "stt.\(sttProvider)") ?? "" }
+                    catch { sttKey = ""; keychainError = true }
+                    do { llmKey = try keychain.string(account: "llm.\(llmProvider)") ?? "" }
+                    catch { llmKey = ""; keychainError = true }
                     return VoiceBootstrapData(
                         store: store,
                         summary: summary,
+                        voiceUISettings: voiceUISettings,
                         migrationError: migrationError,
-                        sttKey: try keychain.string(account: "stt.\(sttProvider)") ?? "",
-                        llmKey: try keychain.string(account: "llm.\(llmProvider)") ?? "",
+                        keychainError: keychainError,
+                        sttKey: sttKey,
+                        llmKey: llmKey,
                         history: try store.history(limit: 20)
                     )
                 }
@@ -351,7 +457,16 @@ final class VoiceStore: ObservableObject {
                         store.migrationMessage = "已迁移 \(summary.historyCount) 条历史记录、\(summary.dictionaryCount) 个词条"
                     }
                 }
+                if let voiceUI = data.voiceUISettings, !voiceUI.alreadyImported {
+                    store.structuredDictationEnabled = voiceUI.structuredDictationEnabled
+                    if voiceUI.structuredDictationEnabled { store.polishEnabled = true }
+                    store.structuredDictationPrompt = voiceUI.structuredDictationPrompt
+                    store.defaults.set(store.structuredDictationEnabled, forKey: Keys.structuredEnabled)
+                    store.defaults.set(store.structuredDictationPrompt, forKey: Keys.structuredPrompt)
+                    store.defaults.set(store.polishEnabled, forKey: Keys.polishEnabled)
+                }
                 if let migrationError = data.migrationError { store.errorMessage = migrationError }
+                if data.keychainError { store.errorMessage = "需要允许 MacPilot 访问钥匙串中的语音服务密钥" }
                 store.sttAPIKey = data.sttKey
                 store.llmAPIKey = data.llmKey
                 store.refreshKeyStatus()
@@ -386,6 +501,8 @@ final class VoiceStore: ObservableObject {
         defaults.set(hotkey, forKey: Keys.hotkey)
         defaults.set(hotkeyMode, forKey: Keys.hotkeyMode)
         defaults.set(polishEnabled, forKey: Keys.polishEnabled)
+        defaults.set(structuredDictationEnabled, forKey: Keys.structuredEnabled)
+        defaults.set(structuredDictationPrompt, forKey: Keys.structuredPrompt)
     }
 
     private func reloadHistory() {
@@ -419,6 +536,24 @@ final class VoiceStore: ObservableObject {
     private func refreshKeyStatus() {
         hasSTTKey = !sttAPIKey.isEmpty
         hasLLMKey = !llmAPIKey.isEmpty
+    }
+
+    private func showCapsuleError(_ message: String, section: SettingsSection = .voice) {
+        errorMessage = message
+        errorSettingsSection = section
+        presentationAdapter.markFailed(message)
+        capsuleState = presentationAdapter.displayState
+        scheduleErrorCollapse()
+    }
+
+    private func scheduleErrorCollapse() {
+        errorCollapseTask?.cancel()
+        errorCollapseTask = Task { [weak self] in
+            try? await Task.sleep(nanoseconds: 5_000_000_000)
+            guard !Task.isCancelled, let store = self else { return }
+            store.presentationAdapter.collapseError()
+            store.capsuleState = store.presentationAdapter.displayState
+        }
     }
 
     private func reloadKeysAndRebuild() {
@@ -455,12 +590,26 @@ final class VoiceStore: ObservableObject {
         default: return error.localizedDescription
         }
     }
+
+    private func settingsSection(for error: Error) -> SettingsSection {
+        switch error {
+        case AudioCaptureError.microphonePermissionDenied,
+             AccessibleTextOutputError.accessibilityPermissionRequired:
+            return .permissions
+        case is LLMClientError:
+            return .artificialIntelligence
+        default:
+            return .voice
+        }
+    }
 }
 
 private struct VoiceBootstrapData: @unchecked Sendable {
     let store: VoicePersistentStore
     let summary: LegacyImportSummary?
+    let voiceUISettings: LegacyVoiceUISettings?
     let migrationError: String?
+    let keychainError: Bool
     let sttKey: String
     let llmKey: String
     let history: [VoiceHistoryEntry]
@@ -483,4 +632,6 @@ private enum Keys {
     static let hotkeyMode = "voice.hotkeyMode"
     static let polishEnabled = "voice.polishEnabled"
     static let capsuleAutoHide = "voice.capsuleAutoHide"
+    static let structuredEnabled = "voice.structuredDictationEnabled"
+    static let structuredPrompt = "voice.structuredDictationPrompt"
 }

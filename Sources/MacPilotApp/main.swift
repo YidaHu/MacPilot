@@ -62,7 +62,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             enabledDidChange: { UserDefaults.standard.set($0, forKey: "rocketReminderEnabled") }
         )
         let settings = SettingsWindowController(calendar: calendar, fans: fans, tools: tools, voice: voice)
-        let voiceCapsule = FloatingVoiceCapsuleController(store: voice) { settings.show() }
+        let voiceCapsule = FloatingVoiceCapsuleController(store: voice) { settings.show(section: $0) }
         let menuBar = MenuBarController(store: store, calendar: calendar, fans: fans, tools: tools, voice: voice, cleaning: cleaning) {
             settings.show()
         }

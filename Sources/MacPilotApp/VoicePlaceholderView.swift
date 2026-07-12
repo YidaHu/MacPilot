@@ -8,6 +8,7 @@ struct VoiceView: View {
             VStack(spacing: 14) {
                 statusCard
                 if let error = store.errorMessage { errorCard(error) }
+                if let pending = store.pendingOutputText { pendingOutputCard(pending) }
                 historyCard
             }
         }
@@ -43,6 +44,7 @@ struct VoiceView: View {
             HStack(spacing: 8) {
                 statusPill("转写", ready: store.hasSTTKey)
                 statusPill("AI 润色", ready: !store.polishEnabled || store.hasLLMKey)
+                if store.structuredDictationEnabled { statusPill("结构化", ready: store.hasLLMKey) }
                 statusPill("自动粘贴", ready: true)
             }
         }
@@ -71,6 +73,22 @@ struct VoiceView: View {
         .clipShape(RoundedRectangle(cornerRadius: 10))
     }
 
+    private func pendingOutputCard(_ text: String) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("待写入文字").font(.caption.weight(.semibold))
+            Text(text).font(.caption).lineLimit(4).textSelection(.enabled)
+            HStack {
+                Button("复制") { store.copyPendingOutput() }
+                Button("重试写入") { store.retryPendingOutput() }
+            }
+            .controlSize(.small)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(10)
+        .background(Color.indigo.opacity(0.08))
+        .clipShape(RoundedRectangle(cornerRadius: 10))
+    }
+
     private var historyCard: some View {
         VStack(alignment: .leading, spacing: 9) {
             HStack {
@@ -86,6 +104,10 @@ struct VoiceView: View {
                 ForEach(Array(store.history.prefix(6)), id: \.id) { item in
                     VStack(alignment: .leading, spacing: 4) {
                         Text(item.polishedText).font(.callout).lineLimit(3)
+                        HStack(spacing: 5) {
+                            if item.processingMode == .structured { historyBadge("结构化", color: .indigo) }
+                            if item.processingStatus == .fallback { historyBadge("回退原文", color: .orange) }
+                        }
                         HStack {
                             Text(item.createdAt, style: .relative).font(.caption2).foregroundColor(.secondary)
                             Spacer()
@@ -103,6 +125,16 @@ struct VoiceView: View {
         .padding(14)
         .background(Color(nsColor: .controlBackgroundColor).opacity(0.65))
         .clipShape(RoundedRectangle(cornerRadius: 14))
+    }
+
+    private func historyBadge(_ title: String, color: Color) -> some View {
+        Text(title)
+            .font(.system(size: 9, weight: .semibold))
+            .foregroundColor(color)
+            .padding(.horizontal, 6)
+            .padding(.vertical, 2)
+            .background(color.opacity(0.1))
+            .clipShape(Capsule())
     }
 
     private func historyButton(_ symbol: String, help: String, action: @escaping () -> Void) -> some View {
