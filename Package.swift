@@ -10,11 +10,13 @@ let package = Package(
     targets: [
         .target(name: "MacPilotCore"),
         .target(name: "MacPilotMetrics", dependencies: ["MacPilotCore"]),
+        .target(name: "MacPilotSystemActions", dependencies: ["MacPilotCore"]),
         .executableTarget(
             name: "MacPilotApp",
             dependencies: ["MacPilotCore", "MacPilotMetrics"]
         ),
         .testTarget(name: "MacPilotCoreTests", dependencies: ["MacPilotCore"]),
-        .testTarget(name: "MacPilotMetricsTests", dependencies: ["MacPilotMetrics"])
+        .testTarget(name: "MacPilotMetricsTests", dependencies: ["MacPilotMetrics"]),
+        .testTarget(name: "MacPilotSystemActionsTests", dependencies: ["MacPilotSystemActions"])
     ]
 )
