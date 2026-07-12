@@ -16,6 +16,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var toolsStore: SystemToolsStore?
     private var cleaningController: CleaningOverlayController?
     private var voiceStore: VoiceStore?
+    private var voiceCapsuleController: FloatingVoiceCapsuleController?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         Task { @MainActor [weak self] in
@@ -29,6 +30,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             self?.cleaningController?.stop()
             await self?.toolsStore?.shutdown()
             self?.voiceStore?.shutdown()
+            self?.voiceCapsuleController?.shutdown()
         }
     }
 
@@ -60,6 +62,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             enabledDidChange: { UserDefaults.standard.set($0, forKey: "rocketReminderEnabled") }
         )
         let settings = SettingsWindowController(calendar: calendar, fans: fans, tools: tools, voice: voice)
+        let voiceCapsule = FloatingVoiceCapsuleController(store: voice) { settings.show() }
         let menuBar = MenuBarController(store: store, calendar: calendar, fans: fans, tools: tools, voice: voice, cleaning: cleaning) {
             settings.show()
         }
@@ -72,6 +75,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         toolsStore = tools
         cleaningController = cleaning
         voiceStore = voice
+        voiceCapsuleController = voiceCapsule
         menuBar.startRefreshing()
         NSWorkspace.shared.notificationCenter.addObserver(
             self,

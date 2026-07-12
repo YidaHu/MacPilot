@@ -11,6 +11,7 @@ final class VoiceStore: ObservableObject {
     @Published private(set) var migrationMessage = "未发现旧版数据"
     @Published private(set) var hasSTTKey = false
     @Published private(set) var hasLLMKey = false
+    @Published private(set) var capsuleState: CapsuleDisplayState = .idle
 
     @Published var isEnabled: Bool
     @Published var sttProvider: String
@@ -23,6 +24,7 @@ final class VoiceStore: ObservableObject {
     @Published var hotkey: String
     @Published var hotkeyMode: String
     @Published var polishEnabled: Bool
+    @Published var capsuleAutoHide: Bool
 
     private let defaults: UserDefaults
     private let keychain: KeychainStore
@@ -31,6 +33,11 @@ final class VoiceStore: ObservableObject {
     private var llmAPIKey = ""
     private var pipeline: VoicePipeline?
     private var hotKeyController: GlobalHotKeyController?
+    private var presentationAdapter = VoicePresentationAdapter()
+    private var recordingStartedAt: Date?
+    private var recordingTimer: Task<Void, Never>?
+    private var completionTask: Task<Void, Never>?
+    private var operationTask: Task<Void, Never>?
 
     init(defaults: UserDefaults = .standard, keychain: KeychainStore = KeychainStore()) {
         self.defaults = defaults
@@ -46,6 +53,7 @@ final class VoiceStore: ObservableObject {
         hotkey = defaults.string(forKey: Keys.hotkey) ?? "Option+/"
         hotkeyMode = defaults.string(forKey: Keys.hotkeyMode) ?? "toggle"
         polishEnabled = defaults.object(forKey: Keys.polishEnabled) as? Bool ?? true
+        capsuleAutoHide = defaults.object(forKey: Keys.capsuleAutoHide) as? Bool ?? true
 
         persistentStore = nil
         bootstrap()
@@ -65,6 +73,7 @@ final class VoiceStore: ObservableObject {
     }
 
     var canRecord: Bool { isEnabled && pipeline != nil && (stage == .idle || stage == .recording) }
+    var capsuleSize: CapsuleSize { CapsuleLayout.size(for: capsuleState) }
 
     func toggleRecording() {
         guard canRecord else { return }
@@ -80,6 +89,11 @@ final class VoiceStore: ObservableObject {
             hotKeyController?.unregister()
             Task { await pipeline?.abort() }
         }
+    }
+
+    func setCapsuleAutoHide(_ autoHide: Bool) {
+        capsuleAutoHide = autoHide
+        defaults.set(autoHide, forKey: Keys.capsuleAutoHide)
     }
 
     func saveConfiguration() {
@@ -106,6 +120,19 @@ final class VoiceStore: ObservableObject {
     }
 
     func clearError() { errorMessage = nil }
+
+    func cancelCurrentOperation() {
+        operationTask?.cancel()
+        operationTask = nil
+        hotKeyController?.resetInteraction()
+        Task { [weak self] in
+            guard let store = self else { return }
+            await store.pipeline?.abort()
+            store.presentationAdapter.resetToIdle()
+            store.capsuleState = store.presentationAdapter.displayState
+            store.stopRecordingTimer()
+        }
+    }
 
     func copyHistory(_ entry: VoiceHistoryEntry) {
         NSPasteboard.general.clearContents()
@@ -150,6 +177,9 @@ final class VoiceStore: ObservableObject {
 
     func shutdown() {
         hotKeyController?.unregister()
+        recordingTimer?.cancel()
+        completionTask?.cancel()
+        operationTask?.cancel()
         Task { await pipeline?.abort() }
     }
 
@@ -172,8 +202,7 @@ final class VoiceStore: ObservableObject {
                 history: persistentStore,
                 onTransition: { [weak self] state in
                     Task { @MainActor [weak self] in
-                        self?.stage = state.stage
-                        if state.stage == .idle { self?.inputLevel = 0 }
+                        self?.handleTransition(state)
                     }
                 }
             )
@@ -191,20 +220,67 @@ final class VoiceStore: ObservableObject {
     private func perform(_ action: HotKeyAction) {
         guard isEnabled, let pipeline else { return }
         errorMessage = nil
-        Task {
+        operationTask?.cancel()
+        operationTask = Task { [weak self] in
+            guard let store = self else { return }
             do {
                 switch action {
                 case .startRecording: _ = try await pipeline.startRecording()
                 case .stopRecording:
                     try await pipeline.stopRecording()
-                    reloadHistory()
+                    store.reloadHistory()
                 case .none: break
                 }
             } catch {
-                hotKeyController?.resetInteraction()
-                errorMessage = describe(error)
+                store.hotKeyController?.resetInteraction()
+                let message = store.describe(error)
+                store.errorMessage = message
+                store.presentationAdapter.markFailed(message)
+                store.capsuleState = store.presentationAdapter.displayState
+            }
+            store.operationTask = nil
+        }
+    }
+
+    private func handleTransition(_ state: VoicePipelineState) {
+        stage = state.stage
+        capsuleState = presentationAdapter.consume(state)
+        if state.stage == .recording {
+            if recordingStartedAt == nil { recordingStartedAt = Date() }
+            startRecordingTimer()
+        } else {
+            stopRecordingTimer()
+        }
+        if state.stage == .idle {
+            inputLevel = 0
+            if capsuleState == .complete {
+                completionTask?.cancel()
+                completionTask = Task { [weak self] in
+                    try? await Task.sleep(nanoseconds: 1_200_000_000)
+                    guard !Task.isCancelled, let store = self else { return }
+                    store.presentationAdapter.resetToIdle()
+                    store.capsuleState = store.presentationAdapter.displayState
+                }
             }
         }
+    }
+
+    private func startRecordingTimer() {
+        guard recordingTimer == nil else { return }
+        recordingTimer = Task { [weak self] in
+            while !Task.isCancelled {
+                guard let store = self, let started = store.recordingStartedAt else { return }
+                store.presentationAdapter.updateRecording(level: store.inputLevel, elapsed: Date().timeIntervalSince(started))
+                store.capsuleState = store.presentationAdapter.displayState
+                try? await Task.sleep(nanoseconds: 100_000_000)
+            }
+        }
+    }
+
+    private func stopRecordingTimer() {
+        recordingTimer?.cancel()
+        recordingTimer = nil
+        recordingStartedAt = nil
     }
 
     private func makeSTTConfiguration() throws -> STTProviderConfiguration {
@@ -406,4 +482,5 @@ private enum Keys {
     static let hotkey = "voice.hotkey"
     static let hotkeyMode = "voice.hotkeyMode"
     static let polishEnabled = "voice.polishEnabled"
+    static let capsuleAutoHide = "voice.capsuleAutoHide"
 }

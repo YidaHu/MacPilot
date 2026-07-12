@@ -2,6 +2,33 @@ import XCTest
 @testable import MacPilotVoice
 
 final class VoicePresentationTests: XCTestCase {
+    func testAdapterDistinguishesStructuredStageAndCompletion() {
+        var adapter = VoicePresentationAdapter()
+        XCTAssertEqual(adapter.consume(.init(stage: .recording)), .recording(level: 0, elapsed: 0))
+        XCTAssertEqual(adapter.consume(.init(stage: .transcribing)), .transcribing)
+        XCTAssertEqual(adapter.consume(.init(stage: .structured)), .structured)
+        XCTAssertEqual(adapter.consume(.init(stage: .outputting)), .outputting)
+        XCTAssertEqual(adapter.consume(.idle), .complete)
+        adapter.resetToIdle()
+        XCTAssertEqual(adapter.displayState, .idle)
+    }
+
+    func testAdapterUpdatesRecordingLevelAndElapsedTime() {
+        var adapter = VoicePresentationAdapter()
+        _ = adapter.consume(.init(stage: .recording))
+        adapter.updateRecording(level: 0.75, elapsed: 12)
+        XCTAssertEqual(adapter.displayState, .recording(level: 0.75, elapsed: 12))
+    }
+
+    func testAdapterKeepsFailureDistinctFromCompletion() {
+        var adapter = VoicePresentationAdapter()
+        _ = adapter.consume(.init(stage: .recording))
+        adapter.markFailed("麦克风失败")
+        XCTAssertEqual(adapter.displayState, .error(message: "麦克风失败", collapsed: false))
+        adapter.collapseError()
+        XCTAssertEqual(adapter.displayState, .error(message: "麦克风失败", collapsed: true))
+    }
+
     func testAutoHideOnlyHidesIdle() {
         XCTAssertFalse(CapsuleLayout.isVisible(state: .idle, autoHide: true))
         XCTAssertTrue(CapsuleLayout.isVisible(state: .recording(level: 0.4, elapsed: 8), autoHide: true))

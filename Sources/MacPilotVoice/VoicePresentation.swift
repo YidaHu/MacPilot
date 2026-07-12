@@ -81,3 +81,49 @@ public enum CapsuleLayout {
         )
     }
 }
+
+public struct VoicePresentationAdapter: Sendable {
+    public private(set) var displayState: CapsuleDisplayState = .idle
+    private var previousStage: VoicePipelineStage = .idle
+
+    public init() {}
+
+    @discardableResult
+    public mutating func consume(_ state: VoicePipelineState) -> CapsuleDisplayState {
+        switch state.stage {
+        case .idle:
+            displayState = previousStage == .outputting ? .complete : .idle
+        case .recording:
+            displayState = .recording(level: 0, elapsed: 0)
+        case .transcribing:
+            displayState = .transcribing
+        case .polishing:
+            displayState = .polishing
+        case .structured:
+            displayState = .structured
+        case .outputting:
+            displayState = .outputting
+        }
+        previousStage = state.stage
+        return displayState
+    }
+
+    public mutating func updateRecording(level: Float, elapsed: TimeInterval) {
+        guard case .recording = displayState else { return }
+        displayState = .recording(level: min(max(level, 0), 1), elapsed: max(elapsed, 0))
+    }
+
+    public mutating func markFailed(_ message: String) {
+        displayState = .error(message: message, collapsed: false)
+    }
+
+    public mutating func collapseError() {
+        guard case let .error(message, _) = displayState else { return }
+        displayState = .error(message: message, collapsed: true)
+    }
+
+    public mutating func resetToIdle() {
+        previousStage = .idle
+        displayState = .idle
+    }
+}
