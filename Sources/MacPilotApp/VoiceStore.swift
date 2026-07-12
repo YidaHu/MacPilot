@@ -59,6 +59,7 @@ final class VoiceStore: ObservableObject {
         case .recording: return "正在聆听…"
         case .transcribing: return "正在转写…"
         case .polishing: return "正在 AI 润色…"
+        case .structured: return "正在结构化口述…"
         case .outputting: return "正在写入当前输入框…"
         }
     }

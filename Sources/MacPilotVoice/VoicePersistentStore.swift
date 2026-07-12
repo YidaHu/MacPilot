@@ -31,6 +31,8 @@ public final class VoicePersistentStore: @unchecked Sendable {
             let url = storeURL ?? Self.defaultStoreURL()
             try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
             description.url = url
+            description.shouldMigrateStoreAutomatically = true
+            description.shouldInferMappingModelAutomatically = true
         }
         container.persistentStoreDescriptions = [description]
         var loadError: Error?
@@ -49,7 +51,15 @@ public final class VoicePersistentStore: @unchecked Sendable {
                       let createdAt = object.value(forKey: "createdAt") as? Date,
                       let raw = object.value(forKey: "rawText") as? String,
                       let polished = object.value(forKey: "polishedText") as? String else { return nil }
-                return VoiceHistoryEntry(id: id, createdAt: createdAt, rawText: raw, polishedText: polished, duration: object.value(forKey: "duration") as? Double ?? 0)
+                return VoiceHistoryEntry(
+                    id: id,
+                    createdAt: createdAt,
+                    rawText: raw,
+                    polishedText: polished,
+                    duration: object.value(forKey: "duration") as? Double ?? 0,
+                    processingMode: VoiceProcessingMode(rawValue: object.value(forKey: "processingMode") as? String ?? "") ?? .standard,
+                    processingStatus: VoiceProcessingStatus(rawValue: object.value(forKey: "processingStatus") as? String ?? "") ?? .success
+                )
             }
         }
     }
@@ -62,6 +72,8 @@ public final class VoicePersistentStore: @unchecked Sendable {
             object.setValue(entry.rawText, forKey: "rawText")
             object.setValue(entry.polishedText, forKey: "polishedText")
             object.setValue(entry.duration, forKey: "duration")
+            object.setValue(entry.processingMode.rawValue, forKey: "processingMode")
+            object.setValue(entry.processingStatus.rawValue, forKey: "processingStatus")
             try container.viewContext.save()
         }
     }
@@ -113,6 +125,8 @@ public final class VoicePersistentStore: @unchecked Sendable {
                     object.setValue(entry.rawText, forKey: "rawText")
                     object.setValue(entry.polishedText, forKey: "polishedText")
                     object.setValue(entry.duration, forKey: "duration")
+                    object.setValue(entry.processingMode.rawValue, forKey: "processingMode")
+                    object.setValue(entry.processingStatus.rawValue, forKey: "processingStatus")
                 }
                 for entry in dictionary {
                     let object = NSEntityDescription.insertNewObject(forEntityName: "DictionaryEntry", into: context)
@@ -155,7 +169,9 @@ public final class VoicePersistentStore: @unchecked Sendable {
         let history = entity("HistoryEntry", [
             attribute("id", .UUIDAttributeType, optional: false), attribute("createdAt", .dateAttributeType, optional: false),
             attribute("rawText", .stringAttributeType, optional: false), attribute("polishedText", .stringAttributeType, optional: false),
-            attribute("duration", .doubleAttributeType, optional: false)
+            attribute("duration", .doubleAttributeType, optional: false),
+            attribute("processingMode", .stringAttributeType, optional: true),
+            attribute("processingStatus", .stringAttributeType, optional: true)
         ])
         let dictionary = entity("DictionaryEntry", [
             attribute("id", .integer64AttributeType, optional: false), attribute("word", .stringAttributeType, optional: false),

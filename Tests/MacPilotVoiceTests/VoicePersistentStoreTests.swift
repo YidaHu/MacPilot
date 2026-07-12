@@ -24,4 +24,19 @@ final class VoicePersistentStoreTests: XCTestCase {
         try store.deleteHistory(id: entry.id)
         XCTAssertTrue(try store.history(limit: 10).isEmpty)
     }
+
+    func testProcessingMetadataRoundTrips() async throws {
+        let store = try VoicePersistentStore(inMemory: true)
+        let entry = VoiceHistoryEntry(
+            rawText: "raw",
+            polishedText: "raw",
+            duration: 2,
+            processingMode: .structured,
+            processingStatus: .fallback
+        )
+
+        try await store.save(entry)
+
+        XCTAssertEqual(try store.history(limit: 1).first, entry)
+    }
 }

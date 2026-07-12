@@ -5,7 +5,30 @@ public enum VoicePipelineStage: String, Equatable, Sendable {
     case recording
     case transcribing
     case polishing
+    case structured
     case outputting
+}
+
+public enum VoiceProcessingMode: String, Equatable, Sendable {
+    case raw, standard, structured
+}
+
+public enum VoiceProcessingStatus: String, Equatable, Sendable {
+    case success, skipped, fallback
+}
+
+public struct VoicePipelineConfiguration: Equatable, Sendable {
+    public let polishEnabled: Bool
+    public let structuredDictation: StructuredDictationSettings
+
+    public init(polishEnabled: Bool = true, structuredDictation: StructuredDictationSettings = .disabled) {
+        self.polishEnabled = polishEnabled
+        self.structuredDictation = structuredDictation
+    }
+}
+
+public enum VoicePipelineWarning: Equatable, Sendable {
+    case processingFallback(VoiceProcessingMode)
 }
 
 public struct VoicePipelineState: Equatable, Sendable {
@@ -50,13 +73,25 @@ public struct VoiceHistoryEntry: Equatable, Sendable {
     public let rawText: String
     public let polishedText: String
     public let duration: TimeInterval
+    public let processingMode: VoiceProcessingMode
+    public let processingStatus: VoiceProcessingStatus
 
-    public init(id: UUID = UUID(), createdAt: Date = Date(), rawText: String, polishedText: String, duration: TimeInterval) {
+    public init(
+        id: UUID = UUID(),
+        createdAt: Date = Date(),
+        rawText: String,
+        polishedText: String,
+        duration: TimeInterval,
+        processingMode: VoiceProcessingMode = .standard,
+        processingStatus: VoiceProcessingStatus = .success
+    ) {
         self.id = id
         self.createdAt = createdAt
         self.rawText = rawText
         self.polishedText = polishedText
         self.duration = duration
+        self.processingMode = processingMode
+        self.processingStatus = processingStatus
     }
 }
 
