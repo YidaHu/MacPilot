@@ -1,0 +1,50 @@
+native-macos/Tests/MacPilotFanTests/FanPresetTests.swift
+  s_895396b36ea4cf::t_5f53df2644ad1d 1-12,15-30
+  s_895396b36ea4cf::t_745788e71016dc 13-14
+native-macos/Package.swift
+  s_895396b36ea4cf::t_6d479ea60ce9a8 10-11,25
+  s_895396b36ea4cf::t_747489925159a5 28
+native-macos/Sources/MacPilotApp/OverviewView.swift
+  s_895396b36ea4cf::t_747489925159a5 3,9,39-40,173,176-178,185-188
+  s_895396b36ea4cf::t_7e695e5cbf2b75 189
+native-macos/Sources/MacPilotCore/AppPresentation.swift
+  s_895396b36ea4cf::t_747489925159a5 57
+native-macos/Sources/MacPilotFan/FanPreset.swift
+  s_895396b36ea4cf::t_e2d80384701099 1-36
+native-macos/Sources/MacPilotFan/FanStore.swift
+  s_895396b36ea4cf::t_cd3a66da72d9e0 1-178
+native-macos/Sources/MacPilotApp/main.swift
+  s_895396b36ea4cf::t_747489925159a5 4,13,31-32,51-52,60
+native-macos/README.md
+  s_895396b36ea4cf::t_50dfc0706ee8bd 7,14-16,18,53,55-65,69,78
+native-macos/Sources/MacPilotApp/SettingsView.swift
+  s_895396b36ea4cf::t_747489925159a5 4,9,19,36,89-93
+native-macos/scripts/restore-fans-auto.sh
+  s_895396b36ea4cf::t_6d479ea60ce9a8 1-19
+native-macos/Tests/MacPilotFanTests/FanStoreTests.swift
+  s_895396b36ea4cf::t_602d996b349d3a 1-67
+native-macos/Sources/MacPilotApp/MenuBarController.swift
+  s_895396b36ea4cf::t_747489925159a5 4,12,16,18,35,72
+native-macos/Sources/MacPilotApp/RootPanelView.swift
+  s_895396b36ea4cf::t_747489925159a5 3,9,27,29
+native-macos/Sources/MacPilotFanRecovery/main.swift
+  s_895396b36ea4cf::t_6d479ea60ce9a8 1-3,5-12,15-16
+native-macos/Sources/MacPilotApp/FansView.swift
+  s_895396b36ea4cf::t_747489925159a5 1-105
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "7bcd30445925bbe6848d3dac179843b9d21214e3",
+  "prompts": {},
+  "sessions": {
+    "s_895396b36ea4cf": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f54e6-6b50-7533-9eea-f7b602d60720",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "YidaHu <huyidada@gmail.com>"
+    }
+  }
+}
