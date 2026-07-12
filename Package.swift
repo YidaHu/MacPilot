@@ -16,6 +16,7 @@ let package = Package(
         .target(name: "MacPilotSystemActions", dependencies: ["MacPilotCore"]),
         .target(name: "MacPilotCalendar", dependencies: ["MacPilotCore"]),
         .target(name: "MacPilotFan"),
+        .target(name: "MacPilotVoice"),
         .target(name: "MacPilotFanHelper", dependencies: ["MacPilotFan"]),
         .executableTarget(
             name: "MacPilotFanHelperExecutable",
@@ -31,6 +32,7 @@ let package = Package(
         .testTarget(name: "MacPilotMetricsTests", dependencies: ["MacPilotMetrics"]),
         .testTarget(name: "MacPilotSystemActionsTests", dependencies: ["MacPilotSystemActions"]),
         .testTarget(name: "MacPilotCalendarTests", dependencies: ["MacPilotCalendar"]),
-        .testTarget(name: "MacPilotFanTests", dependencies: ["MacPilotFan", "MacPilotFanHelper"])
+        .testTarget(name: "MacPilotFanTests", dependencies: ["MacPilotFan", "MacPilotFanHelper"]),
+        .testTarget(name: "MacPilotVoiceTests", dependencies: ["MacPilotVoice"])
     ]
 )
