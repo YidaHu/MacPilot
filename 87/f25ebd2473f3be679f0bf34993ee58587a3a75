@@ -1,0 +1,275 @@
+.gitignore
+  s_895396b36ea4cf::t_49884653efe3bd 21,50
+docs/superpowers/plans/2026-07-10-structured-dictation-mode.md
+  s_895396b36ea4cf::t_b599555fb02479 1-911
+docs/superpowers/plans/2026-07-12-macpilot-floating-voice-implementation.md
+  s_895396b36ea4cf::t_d6563961f288b3 1-657
+docs/superpowers/plans/2026-07-12-macpilot-foundation-and-metrics.md
+  s_895396b36ea4cf::t_612cf7599dcd98 1-279
+docs/superpowers/plans/2026-07-12-macpilot-implementation-roadmap.md
+  s_895396b36ea4cf::t_82ffd82877bb7d 1-52
+docs/superpowers/plans/2026-07-12-macpilot-intel-fan-control.md
+  s_895396b36ea4cf::t_872ff2a52d1b38 1-98
+docs/superpowers/plans/2026-07-12-macpilot-tools-and-calendar.md
+  s_895396b36ea4cf::t_5dd29152782097 1-85
+docs/superpowers/plans/2026-07-12-macpilot-voice-migration-and-release.md
+  s_895396b36ea4cf::t_40457eea67d43e 1-104
+docs/superpowers/specs/2026-07-10-structured-dictation-mode-design.md
+  s_895396b36ea4cf::t_6654e8af262603 1-186
+docs/superpowers/specs/2026-07-12-macpilot-native-floating-voice-design.md
+  s_895396b36ea4cf::t_f7a7b8a2b45e3e 1-169
+docs/superpowers/specs/2026-07-12-macpilot-native-menubar-design.md
+  s_895396b36ea4cf::t_906ee6d56ca3ff 1-361
+native-macos/.gitignore
+  s_895396b36ea4cf::t_93815e6af1f028 1-4
+native-macos/Package.swift
+  s_895396b36ea4cf::t_c66d45a6bab27d 1-38
+native-macos/README.md
+  s_895396b36ea4cf::t_64a80c2e219be1 1-123
+native-macos/Resources/Info.plist
+  s_895396b36ea4cf::t_8051209add0931 1-32
+native-macos/Resources/MacPilot.entitlements
+  s_895396b36ea4cf::t_2276828cb47df3 1-5
+native-macos/Resources/MacPilotFanHelper-Info.plist
+  s_895396b36ea4cf::t_af5a6a43d29974 1-18
+native-macos/Resources/com.huyida.macpilot.fanhelper.plist
+  s_895396b36ea4cf::t_2f934d7dd761f1 1-19
+native-macos/Sources/MacPilotApp/CleanKeyboardWindow.swift
+  s_895396b36ea4cf::t_d23835bed8a371 1-172
+native-macos/Sources/MacPilotApp/FansView.swift
+  s_895396b36ea4cf::t_623001cc4825e6 1-105
+native-macos/Sources/MacPilotApp/FloatingVoiceCapsuleController.swift
+  s_895396b36ea4cf::t_247b9b8da600ad 1-199
+native-macos/Sources/MacPilotApp/FloatingVoiceCapsuleView.swift
+  s_895396b36ea4cf::t_729cd499a4122f 1-143
+native-macos/Sources/MacPilotApp/MenuBarController.swift
+  s_895396b36ea4cf::t_36e018817f3f69 1-82
+native-macos/Sources/MacPilotApp/OverviewView.swift
+  s_895396b36ea4cf::t_4ebb1a8b2c86c0 1-222
+native-macos/Sources/MacPilotApp/RootPanelView.swift
+  s_895396b36ea4cf::t_3d41eeb1967bbd 1-73
+native-macos/Sources/MacPilotApp/SettingsView.swift
+  s_895396b36ea4cf::t_982ecf14970635 1-331
+native-macos/Sources/MacPilotApp/ToolsView.swift
+  s_895396b36ea4cf::t_304b023e206025 1-85
+native-macos/Sources/MacPilotApp/VoicePlaceholderView.swift
+  s_895396b36ea4cf::t_b2eaf51abb7680 1-167
+native-macos/Sources/MacPilotApp/VoiceStore.swift
+  s_895396b36ea4cf::t_4071c2c6e0bc9f 1-622
+native-macos/Sources/MacPilotApp/main.swift
+  s_895396b36ea4cf::t_2436863881c5d3 1-96
+native-macos/Sources/MacPilotCalendar/CalendarEventSnapshot.swift
+  s_895396b36ea4cf::t_afa28d5f22506f 1-25
+native-macos/Sources/MacPilotCalendar/CalendarReminderController.swift
+  s_895396b36ea4cf::t_1c555ccefabdcf 1-139
+native-macos/Sources/MacPilotCalendar/EventKitCalendarMonitor.swift
+  s_895396b36ea4cf::t_ffbc04a15fe9b4 1-37
+native-macos/Sources/MacPilotCalendar/MacPilotCalendar.swift
+  s_895396b36ea4cf::t_b690d2fcb5bcdc 1-5
+native-macos/Sources/MacPilotCalendar/ReminderDecisionEngine.swift
+  s_895396b36ea4cf::t_e194945185c63d 1-27
+native-macos/Sources/MacPilotCalendar/ReminderScheduler.swift
+  s_895396b36ea4cf::t_8ae0b644f629fe 1-39
+native-macos/Sources/MacPilotCalendar/ReminderStore.swift
+  s_895396b36ea4cf::t_fe10c2207b0e83 1-47
+native-macos/Sources/MacPilotCalendar/RocketGeometry.swift
+  s_895396b36ea4cf::t_6f20bfd2ecb7f8 1-27
+native-macos/Sources/MacPilotCalendar/RocketOverlayWindow.swift
+  s_895396b36ea4cf::t_7e49a70b5a59f2 1-132
+native-macos/Sources/MacPilotCore/AppPresentation.swift
+  s_895396b36ea4cf::t_9d8a5e7d6e772a 1-74
+native-macos/Sources/MacPilotCore/AppStore.swift
+  s_895396b36ea4cf::t_3857cdc8d06931 1-23
+native-macos/Sources/MacPilotCore/MacPilotCore.swift
+  s_895396b36ea4cf::t_ba83e850c83c61 1-3
+native-macos/Sources/MacPilotCore/SystemSnapshot.swift
+  s_895396b36ea4cf::t_5113a7aa604fe9 1-91
+native-macos/Sources/MacPilotCore/SystemTool.swift
+  s_895396b36ea4cf::t_72098aa24c16c7 1-21
+native-macos/Sources/MacPilotFan/AppleSMCConnection.swift
+  s_895396b36ea4cf::t_89fe64f07d3d9c 1-142
+native-macos/Sources/MacPilotFan/FanControlRequest.swift
+  s_895396b36ea4cf::t_8aa9ce03e98a30 1-20
+native-macos/Sources/MacPilotFan/FanHelperClient.swift
+  s_895396b36ea4cf::t_592398401635f5 1-122
+native-macos/Sources/MacPilotFan/FanHelperInstaller.swift
+  s_895396b36ea4cf::t_3e6b18fe2940a2 1-45
+native-macos/Sources/MacPilotFan/FanHelperProtocol.swift
+  s_895396b36ea4cf::t_c629043b58bc8e 1-15
+native-macos/Sources/MacPilotFan/FanPreset.swift
+  s_895396b36ea4cf::t_ccacebc2865b33 1-36
+native-macos/Sources/MacPilotFan/FanRequestValidator.swift
+  s_895396b36ea4cf::t_a0f149e8a590b6 1-46
+native-macos/Sources/MacPilotFan/FanSnapshot.swift
+  s_895396b36ea4cf::t_87fa02e099e7da 1-40
+native-macos/Sources/MacPilotFan/FanStore.swift
+  s_895396b36ea4cf::t_fd28f1440fa168 1-178
+native-macos/Sources/MacPilotFan/IntelFanReader.swift
+  s_895396b36ea4cf::t_2d532cfe42a6ec 1-70
+native-macos/Sources/MacPilotFan/MacPilotFan.swift
+  s_895396b36ea4cf::t_3cc2ecceeb5948 1
+native-macos/Sources/MacPilotFan/SMCValue.swift
+  s_895396b36ea4cf::t_b5e9833bbacc5e 1-87
+native-macos/Sources/MacPilotFanDiagnostic/main.swift
+  s_895396b36ea4cf::t_8d3dfa7d269ac5 1-16
+native-macos/Sources/MacPilotFanHelper/FanHelperService.swift
+  s_895396b36ea4cf::t_9e118db899cc52 1-118
+native-macos/Sources/MacPilotFanHelper/FanLeaseManager.swift
+  s_895396b36ea4cf::t_3275690916a497 1-77
+native-macos/Sources/MacPilotFanHelper/IntelFanController.swift
+  s_895396b36ea4cf::t_93bd95e29fd15c 1-72
+native-macos/Sources/MacPilotFanHelperExecutable/main.swift
+  s_895396b36ea4cf::t_a612e56d0c1c06 1-69
+native-macos/Sources/MacPilotFanRecovery/main.swift
+  s_895396b36ea4cf::t_a5c5d75caf44eb 1-16
+native-macos/Sources/MacPilotMetrics/CPUSampler.swift
+  s_895396b36ea4cf::t_95b45f538a0f3a 1-98
+native-macos/Sources/MacPilotMetrics/DiskSampler.swift
+  s_895396b36ea4cf::t_8f7a5f885827d5 1-31
+native-macos/Sources/MacPilotMetrics/MacPilotMetrics.swift
+  s_895396b36ea4cf::t_a661fa82bb9f86 1-25
+native-macos/Sources/MacPilotMetrics/MemorySampler.swift
+  s_895396b36ea4cf::t_ab78361116250a 1-68
+native-macos/Sources/MacPilotMetrics/NetworkSampler.swift
+  s_895396b36ea4cf::t_dac2e676936938 1-193
+native-macos/Sources/MacPilotSystemActions/MacPilotSystemActions.swift
+  s_895396b36ea4cf::t_a5b892e8de86a0 1-5
+native-macos/Sources/MacPilotSystemActions/PowerAssertionController.swift
+  s_895396b36ea4cf::t_421395dea46ed8 1-85
+native-macos/Sources/MacPilotSystemActions/ProcessRunner.swift
+  s_895396b36ea4cf::t_3983d6ebc6d147 1-93
+native-macos/Sources/MacPilotSystemActions/SystemActionController.swift
+  s_895396b36ea4cf::t_00cdcd206b6db9 1-45
+native-macos/Sources/MacPilotSystemActions/SystemToolsStore.swift
+  s_895396b36ea4cf::t_de9b99bd20918f 1-110
+native-macos/Sources/MacPilotVoice/AVAudioCapture.swift
+  s_895396b36ea4cf::t_953bd3eab70bb3 1-105
+native-macos/Sources/MacPilotVoice/AccessibleTextOutput.swift
+  s_895396b36ea4cf::t_1b797560a9070d 1-149
+native-macos/Sources/MacPilotVoice/GlobalHotKeyController.swift
+  s_895396b36ea4cf::t_518dc514bd6eb2 1-133
+native-macos/Sources/MacPilotVoice/KeychainStore.swift
+  s_895396b36ea4cf::t_7037ce1609ea10 1-57
+native-macos/Sources/MacPilotVoice/LLM/OpenAICompatibleLLM.swift
+  s_895396b36ea4cf::t_93fb3ca338c19f 1-86
+native-macos/Sources/MacPilotVoice/LegacyOpenTypelessImporter.swift
+  s_895396b36ea4cf::t_d1c1b0f09521cf 1-189
+native-macos/Sources/MacPilotVoice/MacPilotVoice.swift
+  s_895396b36ea4cf::t_66d414a858ff65 1
+native-macos/Sources/MacPilotVoice/PCM16WAVEncoder.swift
+  s_895396b36ea4cf::t_9de6b1500680d9 1-75
+native-macos/Sources/MacPilotVoice/PromptBuilder.swift
+  s_895396b36ea4cf::t_95240bdefe249a 1-126
+native-macos/Sources/MacPilotVoice/STT/OpenAICompatibleSTT.swift
+  s_895396b36ea4cf::t_4805861d7a55a2 1-138
+native-macos/Sources/MacPilotVoice/StructuredDictation.swift
+  s_895396b36ea4cf::t_f1b32b00801b47 1-37
+native-macos/Sources/MacPilotVoice/VoiceModels.swift
+  s_895396b36ea4cf::t_4aea207e78a881 1-125
+native-macos/Sources/MacPilotVoice/VoicePersistentStore.swift
+  s_895396b36ea4cf::t_875f357e829912 1-217
+native-macos/Sources/MacPilotVoice/VoicePipeline.swift
+  s_895396b36ea4cf::t_daeeb82b088aab 1-153
+native-macos/Sources/MacPilotVoice/VoicePresentation.swift
+  s_895396b36ea4cf::t_b2ecc4d58b4815 1-129
+native-macos/Tests/MacPilotCalendarTests/CalendarReminderControllerTests.swift
+  s_895396b36ea4cf::t_10942076902737 1-81
+native-macos/Tests/MacPilotCalendarTests/ReminderDecisionEngineTests.swift
+  s_895396b36ea4cf::t_1a4a53f9d7f01f 1-27
+native-macos/Tests/MacPilotCalendarTests/ReminderSchedulerTests.swift
+  s_895396b36ea4cf::t_c0baf5b837e241 1-36
+native-macos/Tests/MacPilotCalendarTests/ReminderStoreTests.swift
+  s_895396b36ea4cf::t_47a353711770df 1-34
+native-macos/Tests/MacPilotCalendarTests/RocketGeometryTests.swift
+  s_895396b36ea4cf::t_36eaf3f99085bb 1-12
+native-macos/Tests/MacPilotCoreTests/AppStoreTests.swift
+  s_895396b36ea4cf::t_be1199ee51f751 1-84
+native-macos/Tests/MacPilotCoreTests/PresentationModelTests.swift
+  s_895396b36ea4cf::t_bcbb71b675b792 1-19
+native-macos/Tests/MacPilotFanTests/AppleSMCLayoutTests.swift
+  s_895396b36ea4cf::t_0eb30b73ed144f 1-13
+native-macos/Tests/MacPilotFanTests/FanDiscoveryTests.swift
+  s_895396b36ea4cf::t_bc5f7156cb3cac 1-75
+native-macos/Tests/MacPilotFanTests/FanHelperClientTests.swift
+  s_895396b36ea4cf::t_595e3b0933c148 1-64
+native-macos/Tests/MacPilotFanTests/FanHelperServiceTests.swift
+  s_895396b36ea4cf::t_8aae08221d2b6e 1-77
+native-macos/Tests/MacPilotFanTests/FanLeaseManagerTests.swift
+  s_895396b36ea4cf::t_d744465e9d4665 1-56
+native-macos/Tests/MacPilotFanTests/FanPresetTests.swift
+  s_895396b36ea4cf::t_760545a65c791d 1-30
+native-macos/Tests/MacPilotFanTests/FanRequestValidatorTests.swift
+  s_895396b36ea4cf::t_bd5efdf35d42b0 1-47
+native-macos/Tests/MacPilotFanTests/FanStoreTests.swift
+  s_895396b36ea4cf::t_6e34d8e70b697d 1-67
+native-macos/Tests/MacPilotFanTests/IntelFanControllerTests.swift
+  s_895396b36ea4cf::t_6dac7b03c38f83 1-60
+native-macos/Tests/MacPilotFanTests/SMCValueTests.swift
+  s_895396b36ea4cf::t_3195a3a83b9fd6 1-46
+native-macos/Tests/MacPilotMetricsTests/CPUTicksTests.swift
+  s_895396b36ea4cf::t_569cca514e18d6 1-22
+native-macos/Tests/MacPilotMetricsTests/LiveMetricsProviderTests.swift
+  s_895396b36ea4cf::t_8b68cde0a252a0 1-16
+native-macos/Tests/MacPilotMetricsTests/MemoryMathTests.swift
+  s_895396b36ea4cf::t_678017f942872e 1-18
+native-macos/Tests/MacPilotMetricsTests/NetworkRateTests.swift
+  s_895396b36ea4cf::t_a494b3c4149a3d 1-59
+native-macos/Tests/MacPilotSystemActionsTests/PowerAssertionControllerTests.swift
+  s_895396b36ea4cf::t_a19df3a65d3b84 1-59
+native-macos/Tests/MacPilotSystemActionsTests/SystemActionControllerTests.swift
+  s_895396b36ea4cf::t_4fd46d27bc3e78 1-64
+native-macos/Tests/MacPilotSystemActionsTests/SystemToolsStoreTests.swift
+  s_895396b36ea4cf::t_3060f6a455ffb9 1-70
+native-macos/Tests/MacPilotVoiceTests/AccessibleTextOutputTests.swift
+  s_895396b36ea4cf::t_0cbbde016af462 1-86
+native-macos/Tests/MacPilotVoiceTests/GlobalHotKeyTests.swift
+  s_895396b36ea4cf::t_ca1ebf7164f48b 1-29
+native-macos/Tests/MacPilotVoiceTests/KeychainStoreTests.swift
+  s_895396b36ea4cf::t_f1d0b195e1e7fa 1-15
+native-macos/Tests/MacPilotVoiceTests/LLMClientTests.swift
+  s_895396b36ea4cf::t_fe98c268367abc 1-75
+native-macos/Tests/MacPilotVoiceTests/LegacyImporterTests.swift
+  s_895396b36ea4cf::t_eaebf4c14325ee 1-91
+native-macos/Tests/MacPilotVoiceTests/PCMBufferTests.swift
+  s_895396b36ea4cf::t_981349afedc7f2 1-40
+native-macos/Tests/MacPilotVoiceTests/PromptBuilderTests.swift
+  s_895396b36ea4cf::t_5c1ad9c38dee53 1-57
+native-macos/Tests/MacPilotVoiceTests/STTClientTests.swift
+  s_895396b36ea4cf::t_4c60d108f22963 1-110
+native-macos/Tests/MacPilotVoiceTests/StructuredDictationTests.swift
+  s_895396b36ea4cf::t_6141f35c5f3a3e 1-40
+native-macos/Tests/MacPilotVoiceTests/VoicePersistentStoreTests.swift
+  s_895396b36ea4cf::t_9179f098fd271c 1-42
+native-macos/Tests/MacPilotVoiceTests/VoicePipelineTests.swift
+  s_895396b36ea4cf::t_6a0e04473135f1 1-269
+native-macos/Tests/MacPilotVoiceTests/VoicePresentationTests.swift
+  s_895396b36ea4cf::t_a4ea82d156cf7e 1-69
+native-macos/scripts/build-app.sh
+  s_895396b36ea4cf::t_4fa2cc80f0b56f 1-39
+native-macos/scripts/build-fan-helper.sh
+  s_895396b36ea4cf::t_2625224c3c1abf 1-38
+native-macos/scripts/restore-fans-auto.sh
+  s_895396b36ea4cf::t_6d3d43edf02969 1-19
+src-tauri/src/stt/config.rs
+  s_895396b36ea4cf::t_24fcb62e2f753b 23,34,40,46,52,92,108
+src-tauri/src/stt/whisper_compat.rs
+  s_895396b36ea4cf::t_ae58a48e1383ad 2,18-20,26-30,87-90,92,95-109,113-145,148-150,153-173,175,177-190,192-198,200,202-203,227,293-297,314-408,427,452
+src/i18n/locales/zh.json
+  s_895396b36ea4cf::t_790bbb6afa9319 44
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "87f25ebd2473f3be679f0bf34993ee58587a3a75",
+  "prompts": {},
+  "sessions": {
+    "s_895396b36ea4cf": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f54e6-6b50-7533-9eea-f7b602d60720",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "YidaHu <huyidada@gmail.com>"
+    }
+  }
+}
