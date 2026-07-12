@@ -1,0 +1,21 @@
+native-macos/Tests/MacPilotVoiceTests/VoicePresentationTests.swift
+  s_895396b36ea4cf::t_f52366234c157e 1-42
+native-macos/Sources/MacPilotVoice/VoicePresentation.swift
+  s_895396b36ea4cf::t_9987f6a2e91edb 1-83
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "572c4dda9f8e5d234dc57c7a3bb7a42a062113b6",
+  "prompts": {},
+  "sessions": {
+    "s_895396b36ea4cf": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f54e6-6b50-7533-9eea-f7b602d60720",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "YidaHu <huyidada@gmail.com>"
+    }
+  }
+}
