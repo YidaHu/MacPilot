@@ -22,6 +22,8 @@ final class LegacyImporterTests: XCTestCase {
 
         let second = try importer.importVoiceUISettings(from: fixture.directory)
         XCTAssertTrue(second.alreadyImported)
+        XCTAssertTrue(second.structuredDictationEnabled)
+        XCTAssertEqual(second.structuredDictationPrompt, "按主题忠实整理")
         XCTAssertEqual(try store.history(limit: 10).count, 1)
     }
 

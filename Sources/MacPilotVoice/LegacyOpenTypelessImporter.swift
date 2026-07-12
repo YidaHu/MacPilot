@@ -72,14 +72,7 @@ public final class LegacyOpenTypelessImporter {
     }
 
     public func importVoiceUISettings(from sourceDirectory: URL) throws -> LegacyVoiceUISettings {
-        if try store.hasMigration(version: Self.voiceUIMigrationVersion) {
-            return LegacyVoiceUISettings(
-                structuredDictationEnabled: false,
-                structuredDictationPrompt: StructuredDictationSettings.defaultPrompt,
-                alreadyImported: true
-            )
-        }
-
+        let alreadyImported = try store.hasMigration(version: Self.voiceUIMigrationVersion)
         let copied = try copySettingsFile(from: sourceDirectory)
         defer { try? FileManager.default.removeItem(at: copied.directory) }
         guard let root = try? JSONSerialization.jsonObject(with: Data(contentsOf: copied.settings)) as? [String: Any],
@@ -91,11 +84,13 @@ public final class LegacyOpenTypelessImporter {
             enabled: app["structured_dictation_enabled"] as? Bool ?? false,
             prompt: rawPrompt
         )
-        try store.recordMigration(version: Self.voiceUIMigrationVersion)
+        if !alreadyImported {
+            try store.recordMigration(version: Self.voiceUIMigrationVersion)
+        }
         return LegacyVoiceUISettings(
             structuredDictationEnabled: sanitized.enabled,
             structuredDictationPrompt: sanitized.prompt,
-            alreadyImported: false
+            alreadyImported: alreadyImported
         )
     }
 

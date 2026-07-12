@@ -457,12 +457,16 @@ final class VoiceStore: ObservableObject {
                         store.migrationMessage = "已迁移 \(summary.historyCount) 条历史记录、\(summary.dictionaryCount) 个词条"
                     }
                 }
-                if let voiceUI = data.voiceUISettings, !voiceUI.alreadyImported {
-                    store.structuredDictationEnabled = voiceUI.structuredDictationEnabled
-                    if voiceUI.structuredDictationEnabled { store.polishEnabled = true }
-                    store.structuredDictationPrompt = voiceUI.structuredDictationPrompt
-                    store.defaults.set(store.structuredDictationEnabled, forKey: Keys.structuredEnabled)
-                    store.defaults.set(store.structuredDictationPrompt, forKey: Keys.structuredPrompt)
+                if let voiceUI = data.voiceUISettings {
+                    if store.defaults.object(forKey: Keys.structuredEnabled) == nil {
+                        store.structuredDictationEnabled = voiceUI.structuredDictationEnabled
+                        store.defaults.set(store.structuredDictationEnabled, forKey: Keys.structuredEnabled)
+                    }
+                    if store.defaults.string(forKey: Keys.structuredPrompt) == nil {
+                        store.structuredDictationPrompt = voiceUI.structuredDictationPrompt
+                        store.defaults.set(store.structuredDictationPrompt, forKey: Keys.structuredPrompt)
+                    }
+                    if store.structuredDictationEnabled { store.polishEnabled = true }
                     store.defaults.set(store.polishEnabled, forKey: Keys.polishEnabled)
                 }
                 if let migrationError = data.migrationError { store.errorMessage = migrationError }
