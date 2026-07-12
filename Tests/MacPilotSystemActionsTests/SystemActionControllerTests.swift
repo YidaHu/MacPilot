@@ -37,6 +37,16 @@ final class SystemActionControllerTests: XCTestCase {
         XCTAssertEqual(result, .handledBySessionController)
         XCTAssertEqual(commands, [])
     }
+
+    func testEnablingDesktopFilesToolHidesDesktopFiles() async {
+        let runner = FakeRunner(results: [.init(exitCode: 0, standardError: "")])
+        let controller = SystemActionController(runner: runner)
+
+        _ = await controller.set(.desktopFiles, enabled: true)
+        let commands = await runner.commands
+
+        XCTAssertEqual(commands, [.setDesktopFilesVisible(false)])
+    }
 }
 
 private actor FakeRunner: ProcessRunning {

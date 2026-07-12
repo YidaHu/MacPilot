@@ -1,12 +1,16 @@
 import MacPilotCalendar
 import MacPilotCore
 import MacPilotFan
+import MacPilotSystemActions
 import SwiftUI
 
 struct OverviewView: View {
     @ObservedObject var store: AppStore
     @ObservedObject var calendar: CalendarReminderController
     @ObservedObject var fans: FanStore
+    @ObservedObject var tools: SystemToolsStore
+    let cleaning: CleaningOverlayController
+    @State private var shortcutError: String?
     private let columns = [GridItem(.flexible(), spacing: 8), GridItem(.flexible(), spacing: 8)]
 
     var body: some View {
@@ -77,11 +81,19 @@ struct OverviewView: View {
 
     private var shortcutRow: some View {
         HStack(spacing: 7) {
-            ShortcutPreview(icon: "bolt.fill", title: "省电")
-            ShortcutPreview(icon: "cup.and.saucer.fill", title: "唤醒")
+            ToolShortcut(icon: "bolt.fill", title: "省电", isEnabled: tools.state(for: .lowPower) == .enabled) {
+                Task { await tools.toggle(.lowPower) }
+            }
+            ToolShortcut(icon: "cup.and.saucer.fill", title: "唤醒", isEnabled: tools.state(for: .keepAwake) == .enabled) {
+                Task { await tools.toggle(.keepAwake) }
+            }
             RocketShortcut(isEnabled: calendar.isEnabled) { calendar.setEnabled(!calendar.isEnabled) }
-            ShortcutPreview(icon: "keyboard", title: "键盘")
+            ToolShortcut(icon: "keyboard", title: "键盘", isEnabled: false) {
+                do { try cleaning.showKeyboardCleaning() }
+                catch { shortcutError = error.localizedDescription }
+            }
         }
+        .help(shortcutError ?? "快捷工具")
     }
 
     private var voiceCard: some View {
@@ -189,17 +201,22 @@ private struct FanPreviewCard: View {
     }
 }
 
-private struct ShortcutPreview: View {
+private struct ToolShortcut: View {
     let icon: String
     let title: String
+    let isEnabled: Bool
+    let action: () -> Void
     var body: some View {
-        VStack(spacing: 5) {
-            Image(systemName: icon).font(.body)
-            Text(title).font(.caption2)
+        Button(action: action) {
+            VStack(spacing: 5) {
+                Image(systemName: icon).font(.body)
+                Text(title).font(.caption2)
+            }
+            .frame(maxWidth: .infinity, minHeight: 54)
+            .background(isEnabled ? Color.accentColor : Color(nsColor: .controlBackgroundColor).opacity(0.88))
+            .foregroundColor(isEnabled ? .white : .primary)
+            .clipShape(RoundedRectangle(cornerRadius: 11))
         }
-        .frame(maxWidth: .infinity, minHeight: 54)
-        .background(Color(nsColor: .controlBackgroundColor).opacity(0.88))
-        .clipShape(RoundedRectangle(cornerRadius: 11))
-        .opacity(0.65)
+        .buttonStyle(.plain)
     }
 }

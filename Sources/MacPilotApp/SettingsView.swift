@@ -2,11 +2,12 @@ import AppKit
 import MacPilotCalendar
 import MacPilotCore
 import MacPilotFan
+import MacPilotSystemActions
 import SwiftUI
 
 @MainActor
 final class SettingsWindowController: NSWindowController {
-    init(calendar: CalendarReminderController, fans: FanStore) {
+    init(calendar: CalendarReminderController, fans: FanStore, tools: SystemToolsStore) {
         let window = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 760, height: 520),
             styleMask: [.titled, .closable, .miniaturizable, .resizable],
@@ -16,7 +17,7 @@ final class SettingsWindowController: NSWindowController {
         window.title = "MacPilot 设置"
         window.minSize = NSSize(width: 680, height: 460)
         window.isReleasedWhenClosed = false
-        window.contentViewController = NSHostingController(rootView: SettingsView(calendar: calendar, fans: fans))
+        window.contentViewController = NSHostingController(rootView: SettingsView(calendar: calendar, fans: fans, tools: tools))
         super.init(window: window)
     }
 
@@ -34,6 +35,7 @@ final class SettingsWindowController: NSWindowController {
 struct SettingsView: View {
     @ObservedObject var calendar: CalendarReminderController
     @ObservedObject var fans: FanStore
+    @ObservedObject var tools: SystemToolsStore
     @State private var selection: SettingsSection = .general
 
     var body: some View {
@@ -91,6 +93,10 @@ struct SettingsView: View {
                     SettingRow(title: "硬件能力", detail: "只允许已验证的左右风扇范围", control: fans.snapshot?.controlsAvailable == true ? "双风扇可用" : "检查中")
                     SettingRow(title: "失联保护", detail: "助手断开、超时或应用退出后恢复", control: "系统自动")
                     Button("立即恢复系统自动控制") { Task { await fans.restoreAutomatic() } }
+                } else if selection == .tools {
+                    SettingRow(title: "保持唤醒", detail: "阻止系统空闲睡眠", control: tools.state(for: .keepAwake) == .enabled ? "已开启" : "已关闭")
+                    SettingRow(title: "保持亮屏", detail: "阻止显示器空闲熄灭", control: tools.state(for: .keepDisplayAwake) == .enabled ? "已开启" : "已关闭")
+                    SettingRow(title: "退出保护", detail: "退出应用时释放所有电源断言", control: "已开启")
                 } else {
                     Spacer()
                     HStack {

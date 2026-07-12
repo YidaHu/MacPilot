@@ -35,7 +35,7 @@ public actor SystemActionController {
         case .lowPower: return .setLowPower(enabled)
         case .lockScreen: return .lockScreen
         case .darkMode: return .setDarkMode(enabled)
-        case .desktopFiles: return .setDesktopFilesVisible(enabled)
+        case .desktopFiles: return .setDesktopFilesVisible(!enabled)
         case .dockVisibility: return .setDockAutoHidden(enabled)
         case .emptyTrash: return .emptyTrash
         case .keepAwake, .keepDisplayAwake, .cleanScreen, .cleanKeyboard, .rocketReminder:
