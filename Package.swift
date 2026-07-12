@@ -12,6 +12,7 @@ let package = Package(
         .target(name: "MacPilotMetrics", dependencies: ["MacPilotCore"]),
         .target(name: "MacPilotSystemActions", dependencies: ["MacPilotCore"]),
         .target(name: "MacPilotCalendar", dependencies: ["MacPilotCore"]),
+        .target(name: "MacPilotFan"),
         .executableTarget(
             name: "MacPilotApp",
             dependencies: ["MacPilotCore", "MacPilotMetrics", "MacPilotSystemActions", "MacPilotCalendar"]
@@ -19,6 +20,7 @@ let package = Package(
         .testTarget(name: "MacPilotCoreTests", dependencies: ["MacPilotCore"]),
         .testTarget(name: "MacPilotMetricsTests", dependencies: ["MacPilotMetrics"]),
         .testTarget(name: "MacPilotSystemActionsTests", dependencies: ["MacPilotSystemActions"]),
-        .testTarget(name: "MacPilotCalendarTests", dependencies: ["MacPilotCalendar"])
+        .testTarget(name: "MacPilotCalendarTests", dependencies: ["MacPilotCalendar"]),
+        .testTarget(name: "MacPilotFanTests", dependencies: ["MacPilotFan"])
     ]
 )
