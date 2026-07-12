@@ -1,0 +1,41 @@
+native-macos/Sources/MacPilotFan/SMCValue.swift
+  s_895396b36ea4cf::t_04a6e71df9b1e3 53-66
+native-macos/Sources/MacPilotFan/IntelFanReader.swift
+  s_895396b36ea4cf::t_2858126cf195b0 9
+  s_895396b36ea4cf::t_04a6e71df9b1e3 57-62
+  s_895396b36ea4cf::t_5003016311de11 1-8,10-56,63-64
+native-macos/Sources/MacPilotFan/AppleSMCConnection.swift
+  s_895396b36ea4cf::t_faa8bd4cd901c6 48,55,100,105,113-121
+  s_895396b36ea4cf::t_84951f937c52e9 86
+  s_895396b36ea4cf::t_2858126cf195b0 1-47,49-54,56-85,87-99,101-104,106-112,122
+native-macos/Tests/MacPilotFanTests/FanDiscoveryTests.swift
+  s_895396b36ea4cf::t_06e1d48799e9b4 42-53,60-64
+  s_895396b36ea4cf::t_0c074755cb7fd9 1-41,54-59,65-75
+native-macos/Package.swift
+  s_895396b36ea4cf::t_2858126cf195b0 8-9,17
+native-macos/Tests/MacPilotFanTests/SMCValueTests.swift
+  s_895396b36ea4cf::t_06e1d48799e9b4 19-23
+native-macos/Sources/MacPilotFanDiagnostic/main.swift
+  s_895396b36ea4cf::t_2858126cf195b0 1-16
+native-macos/Tests/MacPilotFanTests/AppleSMCLayoutTests.swift
+  s_895396b36ea4cf::t_e062eb41155fc3 1-13
+native-macos/Sources/MacPilotFan/FanSnapshot.swift
+  s_895396b36ea4cf::t_5003016311de11 2-40
+  s_895396b36ea4cf::t_2858126cf195b0 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "70063b8373ac51a152a0c3797488aea7fe72c532",
+  "prompts": {},
+  "sessions": {
+    "s_895396b36ea4cf": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f54e6-6b50-7533-9eea-f7b602d60720",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "YidaHu <huyidada@gmail.com>"
+    }
+  }
+}
