@@ -1,0 +1,26 @@
+native-macos/Sources/MacPilotVoice/StructuredDictation.swift
+  s_895396b36ea4cf::t_9371ad999ef5cc 1-37
+native-macos/Tests/MacPilotVoiceTests/PromptBuilderTests.swift
+  s_895396b36ea4cf::t_d0b6dcc8e8482d 5-22
+native-macos/Tests/MacPilotVoiceTests/StructuredDictationTests.swift
+  s_895396b36ea4cf::t_d0b6dcc8e8482d 1-40
+native-macos/Sources/MacPilotVoice/PromptBuilder.swift
+  s_895396b36ea4cf::t_9371ad999ef5cc 14-15,23-25,33-34,82-94
+  s_895396b36ea4cf::t_f87cfa8135a821 95-96
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "5f5573c8bf9178b73c92ba7f3041a71ec1bd1b4c",
+  "prompts": {},
+  "sessions": {
+    "s_895396b36ea4cf": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f54e6-6b50-7533-9eea-f7b602d60720",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "YidaHu <huyidada@gmail.com>"
+    }
+  }
+}
