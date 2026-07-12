@@ -1,0 +1,31 @@
+native-macos/Tests/MacPilotSystemActionsTests/SystemActionControllerTests.swift
+  s_895396b36ea4cf::t_ebbb146ec4ee00 11-12,15-16,24,27,35,38
+  s_895396b36ea4cf::t_22e73d810affe0 1-10,13-14,17-23,25-26,28-34,36-37,39-54
+native-macos/Sources/MacPilotCore/SystemTool.swift
+  s_895396b36ea4cf::t_39207fc692fb92 1-21
+native-macos/Package.swift
+  s_895396b36ea4cf::t_22e73d810affe0 13,20
+  s_895396b36ea4cf::t_f9249c2a55b969 19
+native-macos/Sources/MacPilotSystemActions/SystemActionController.swift
+  s_895396b36ea4cf::t_39207fc692fb92 1-45
+native-macos/Sources/MacPilotSystemActions/ProcessRunner.swift
+  s_895396b36ea4cf::t_39207fc692fb92 1-93
+native-macos/Sources/MacPilotSystemActions/MacPilotSystemActions.swift
+  s_895396b36ea4cf::t_22e73d810affe0 1-5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "c01db77ada466d9f5ae239e2c82a352bcfdcaca0",
+  "prompts": {},
+  "sessions": {
+    "s_895396b36ea4cf": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f54e6-6b50-7533-9eea-f7b602d60720",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "YidaHu <huyidada@gmail.com>"
+    }
+  }
+}
