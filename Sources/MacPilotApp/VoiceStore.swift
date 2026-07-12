@@ -406,8 +406,6 @@ final class VoiceStore: ObservableObject {
         let legacy = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
             .appendingPathComponent("com.opentypeless.app", isDirectory: true)
         let keychain = keychain
-        let currentSTTProvider = sttProvider
-        let currentLLMProvider = llmProvider
         Task { [weak self] in
             let result = await Task.detached { () -> Result<VoiceBootstrapData, Error> in
                 Result {
@@ -422,23 +420,11 @@ final class VoiceStore: ObservableObject {
                         do { voiceUISettings = try importer.importVoiceUISettings(from: legacy) }
                         catch { migrationError = "OpenTypeless 语音界面设置迁移失败" }
                     }
-                    let sttProvider = summary.flatMap { $0.alreadyImported ? nil : $0.settings.sttProvider } ?? currentSTTProvider
-                    let llmProvider = summary.flatMap { $0.alreadyImported ? nil : $0.settings.llmProvider } ?? currentLLMProvider
-                    var keychainError = false
-                    let sttKey: String
-                    let llmKey: String
-                    do { sttKey = try keychain.string(account: "stt.\(sttProvider)") ?? "" }
-                    catch { sttKey = ""; keychainError = true }
-                    do { llmKey = try keychain.string(account: "llm.\(llmProvider)") ?? "" }
-                    catch { llmKey = ""; keychainError = true }
                     return VoiceBootstrapData(
                         store: store,
                         summary: summary,
                         voiceUISettings: voiceUISettings,
                         migrationError: migrationError,
-                        keychainError: keychainError,
-                        sttKey: sttKey,
-                        llmKey: llmKey,
                         history: try store.history(limit: 20)
                     )
                 }
@@ -470,11 +456,9 @@ final class VoiceStore: ObservableObject {
                     store.defaults.set(store.polishEnabled, forKey: Keys.polishEnabled)
                 }
                 if let migrationError = data.migrationError { store.errorMessage = migrationError }
-                if data.keychainError { store.errorMessage = "需要允许 MacPilot 访问钥匙串中的语音服务密钥" }
-                store.sttAPIKey = data.sttKey
-                store.llmAPIKey = data.llmKey
                 store.refreshKeyStatus()
                 store.rebuildRuntime()
+                store.reloadKeysAndRebuild()
             case let .failure(error):
                 store.errorMessage = "无法初始化语音服务：\(error.localizedDescription)"
             }
@@ -613,9 +597,6 @@ private struct VoiceBootstrapData: @unchecked Sendable {
     let summary: LegacyImportSummary?
     let voiceUISettings: LegacyVoiceUISettings?
     let migrationError: String?
-    let keychainError: Bool
-    let sttKey: String
-    let llmKey: String
     let history: [VoiceHistoryEntry]
 }
 
