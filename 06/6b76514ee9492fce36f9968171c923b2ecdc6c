@@ -1,0 +1,28 @@
+native-macos/Tests/MacPilotMetricsTests/LiveMetricsProviderTests.swift
+  s_895396b36ea4cf::t_6a73fdd4e2bf96 4-14
+native-macos/Tests/MacPilotMetricsTests/NetworkRateTests.swift
+  s_895396b36ea4cf::t_826c0cee20e3af 1-59
+native-macos/Sources/MacPilotMetrics/NetworkSampler.swift
+  s_895396b36ea4cf::t_8fbbb14b8d03b8 1-193
+native-macos/Sources/MacPilotMetrics/DiskSampler.swift
+  s_895396b36ea4cf::t_8fbbb14b8d03b8 1-31
+native-macos/Sources/MacPilotMetrics/MacPilotMetrics.swift
+  s_895396b36ea4cf::t_8fbbb14b8d03b8 7-25
+  s_895396b36ea4cf::t_57861bb3f3f58f 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "066b76514ee9492fce36f9968171c923b2ecdc6c",
+  "prompts": {},
+  "sessions": {
+    "s_895396b36ea4cf": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f54e6-6b50-7533-9eea-f7b602d60720",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "YidaHu <huyidada@gmail.com>"
+    }
+  }
+}
