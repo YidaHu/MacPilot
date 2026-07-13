@@ -1,0 +1,23 @@
+native-macos/Sources/MacPilotApp/VoiceStore.swift
+  s_14fcc1e13a8c7a::t_8409db14703226 143-156
+native-macos/Sources/MacPilotApp/SettingsView.swift
+  s_14fcc1e13a8c7a::t_bee4b7aa39c7f2 208-209
+native-macos/Sources/MacPilotApp/HotKeyRecorder.swift
+  s_14fcc1e13a8c7a::t_8409db14703226 9,12-16,22,31,34-38,41,54,56,100,102
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "389eb56359de6c5bd05155d2a5b0ce23330708eb",
+  "prompts": {},
+  "sessions": {
+    "s_14fcc1e13a8c7a": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f58fc-20a4-74a0-b7f2-6abd68e76a1f",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "YidaHu <huyidada@gmail.com>"
+    }
+  }
+}
