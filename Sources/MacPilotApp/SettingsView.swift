@@ -200,7 +200,16 @@ struct SettingsView: View {
                     }
                     Button("保存 AI 设置") { voice.saveConfiguration() }
                 } else if selection == .shortcuts {
-                    LabeledTextField(title: "语音快捷键", value: $voice.hotkey, placeholder: "Option+/")
+                    HStack {
+                        Text("语音快捷键").fontWeight(.medium)
+                        Spacer()
+                        HotKeyRecorder(
+                            descriptor: voice.hotkeyCandidate,
+                            onCapture: voice.setHotKeyCandidate,
+                            onRecordingChanged: voice.setHotKeyCaptureActive
+                        )
+                        .frame(width: 300)
+                    }
                     HStack {
                         Text("触发方式").fontWeight(.medium)
                         Spacer()
@@ -209,9 +218,21 @@ struct SettingsView: View {
                             Text("按住说话").tag("hold")
                         }.labelsHidden().frame(width: 190)
                     }
-                    Text("支持 Option、Command、Control、Shift 与 /、.、Space、R 的组合。")
-                        .font(.caption).foregroundColor(.secondary)
-                    Button("保存快捷键") { voice.saveConfiguration() }
+                    if !voice.hotkeyCandidate.hasModifiers {
+                        Label("单键快捷键可能与正常键盘输入冲突。", systemImage: "exclamationmark.triangle")
+                            .font(.caption)
+                            .foregroundColor(.orange)
+                    }
+                    Text("点击快捷键按钮后直接按下新按键；按 Esc 可取消录制。")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Text("当前生效：\(voice.hotkey)")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    if let error = voice.hotkeySaveError {
+                        Text(error).font(.caption).foregroundColor(.red)
+                    }
+                    Button("保存快捷键") { voice.saveHotKeyConfiguration() }
                 } else if selection == .permissions {
                     SettingRow(title: "麦克风", detail: "录制语音所必需；首次录音时系统会请求", control: "按需授权")
                     SettingRow(title: "辅助功能", detail: "用于把结果粘贴到当前输入框", control: "按需授权")
