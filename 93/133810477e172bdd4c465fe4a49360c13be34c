@@ -1,0 +1,35 @@
+Sources/MacPilotApp/VoiceStore.swift
+  s_14fcc1e13a8c7a::t_bba36a1ac90259 8-9,46,309,376-379,416-417,419-422,645-647
+Sources/MacPilotVoice/PCM16WAVSegmenter.swift
+  s_14fcc1e13a8c7a::t_fc73982dbc170c 1-117
+Sources/MacPilotVoice/RecordingDeadline.swift
+  s_14fcc1e13a8c7a::t_8cb828c2fec7b0 1-24
+Sources/MacPilotVoice/STT/OpenAICompatibleSTT.swift
+  s_14fcc1e13a8c7a::t_c4799705e48f10 86-115,117-118,120,127,146-157,160,172
+Tests/MacPilotVoiceTests/RecordingDeadlineTests.swift
+  s_14fcc1e13a8c7a::t_9da81a84700104 1-21
+Tests/MacPilotVoiceTests/STTClientTests.swift
+  s_14fcc1e13a8c7a::t_72069a85eea482 67-143,154-191
+Tests/MacPilotVoiceTests/WAVSegmenterTests.swift
+  s_14fcc1e13a8c7a::t_39ebfb21dc79ff 1-87
+docs/superpowers/plans/2026-07-13-long-dictation-chunking.md
+  s_14fcc1e13a8c7a::t_003373e8abbc59 1-202
+docs/superpowers/specs/2026-07-13-long-dictation-chunking-design.md
+  s_14fcc1e13a8c7a::t_7ac2dbc8e6c99a 1-79
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "93133810477e172bdd4c465fe4a49360c13be34c",
+  "prompts": {},
+  "sessions": {
+    "s_14fcc1e13a8c7a": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f58fc-20a4-74a0-b7f2-6abd68e76a1f",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "YidaHu <huyidada@gmail.com>"
+    }
+  }
+}
