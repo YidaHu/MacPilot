@@ -1,0 +1,22 @@
+Sources/MacPilotApp/CleanKeyboardWindow.swift
+  s_895396b36ea4cf::t_645c7eb275eef4 18,23-24,75-87
+Sources/MacPilotApp/FloatingVoiceCapsuleController.swift
+  s_895396b36ea4cf::t_645c7eb275eef4 58-59,72-74,76-80,82-87
+  s_895396b36ea4cf::t_5fbc3c2a4e813c 75,81
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "6595ee631004fdd6853a89f99af45302d9dae812",
+  "prompts": {},
+  "sessions": {
+    "s_895396b36ea4cf": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f54e6-6b50-7533-9eea-f7b602d60720",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "YidaHu <huyidada@gmail.com>"
+    }
+  }
+}
