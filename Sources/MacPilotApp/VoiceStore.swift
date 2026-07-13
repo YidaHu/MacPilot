@@ -24,7 +24,8 @@ final class VoiceStore: ObservableObject {
     @Published var llmProvider: String
     @Published var llmBaseURL: String
     @Published var llmModel: String
-    @Published var hotkey: String
+    @Published private(set) var hotkeyCandidate: HotKeyDescriptor
+    @Published private(set) var hotkeySaveError: String?
     @Published var hotkeyMode: String
     @Published var polishEnabled: Bool
     @Published var capsuleAutoHide: Bool
@@ -46,6 +47,8 @@ final class VoiceStore: ObservableObject {
     private var errorCollapseTask: Task<Void, Never>?
     private var processingWarning: VoicePipelineWarning?
     private var lastProcessedText: String?
+    @Published private var savedHotkey: HotKeyDescriptor
+    private var savedHotkeyMode: String
 
     init(defaults: UserDefaults = .standard, keychain: KeychainStore = KeychainStore()) {
         self.defaults = defaults
@@ -58,8 +61,13 @@ final class VoiceStore: ObservableObject {
         llmProvider = defaults.string(forKey: Keys.llmProvider) ?? "zhipu"
         llmBaseURL = defaults.string(forKey: Keys.llmBaseURL) ?? "https://open.bigmodel.cn/api/paas/v4"
         llmModel = defaults.string(forKey: Keys.llmModel) ?? "glm-4-flash"
-        hotkey = defaults.string(forKey: Keys.hotkey) ?? "Option+/"
-        hotkeyMode = defaults.string(forKey: Keys.hotkeyMode) ?? "toggle"
+        let storedHotkey = HotKeyDescriptor.resolve(defaults.string(forKey: Keys.hotkey))
+        let storedHotkeyMode = HotKeyMode(rawValue: defaults.string(forKey: Keys.hotkeyMode) ?? "")?.rawValue ?? "toggle"
+        hotkeyCandidate = storedHotkey
+        hotkeySaveError = nil
+        hotkeyMode = storedHotkeyMode
+        savedHotkey = storedHotkey
+        savedHotkeyMode = storedHotkeyMode
         polishEnabled = defaults.object(forKey: Keys.polishEnabled) as? Bool ?? true
         capsuleAutoHide = defaults.object(forKey: Keys.capsuleAutoHide) as? Bool ?? true
         structuredDictationEnabled = defaults.object(forKey: Keys.structuredEnabled) as? Bool ?? false
@@ -84,6 +92,7 @@ final class VoiceStore: ObservableObject {
 
     var canRecord: Bool { isEnabled && pipeline != nil && (stage == .idle || stage == .recording) }
     var capsuleSize: CapsuleSize { CapsuleLayout.size(for: capsuleState) }
+    var hotkey: String { savedHotkey.displayValue }
 
     func toggleRecording() {
         guard canRecord else { return }
@@ -126,6 +135,36 @@ final class VoiceStore: ObservableObject {
         structuredDictationPrompt = StructuredDictationSettings.defaultPrompt
     }
 
+    func setHotKeyCandidate(_ descriptor: HotKeyDescriptor) {
+        hotkeyCandidate = descriptor
+        hotkeySaveError = nil
+    }
+
+    func saveHotKeyConfiguration() {
+        let candidate = hotkeyCandidate
+        let mode = HotKeyMode(rawValue: hotkeyMode) ?? .toggle
+
+        guard isEnabled else {
+            commitHotKey(candidate, mode: mode)
+            return
+        }
+
+        let previousController = hotKeyController
+        previousController?.unregister()
+        let replacement = GlobalHotKeyController(mode: mode) { [weak self] action in self?.perform(action) }
+        do {
+            try replacement.register(candidate)
+            hotKeyController = replacement
+            commitHotKey(candidate, mode: mode)
+        } catch {
+            try? previousController?.register(savedHotkey)
+            hotKeyController = previousController
+            hotkeyCandidate = savedHotkey
+            hotkeyMode = savedHotkeyMode
+            hotkeySaveError = "快捷键已被占用或无法注册。原快捷键仍然有效。"
+        }
+    }
+
     func saveConfiguration() {
         defaults.set(sttProvider, forKey: Keys.sttProvider)
         defaults.set(sttLanguage, forKey: Keys.sttLanguage)
@@ -134,8 +173,6 @@ final class VoiceStore: ObservableObject {
         defaults.set(llmProvider, forKey: Keys.llmProvider)
         defaults.set(llmBaseURL, forKey: Keys.llmBaseURL)
         defaults.set(llmModel, forKey: Keys.llmModel)
-        defaults.set(hotkey, forKey: Keys.hotkey)
-        defaults.set(hotkeyMode, forKey: Keys.hotkeyMode)
         defaults.set(polishEnabled, forKey: Keys.polishEnabled)
         let structured = StructuredDictationSettings(enabled: structuredDictationEnabled, prompt: structuredDictationPrompt)
         structuredDictationPrompt = structured.prompt
@@ -278,9 +315,9 @@ final class VoiceStore: ObservableObject {
                     Task { @MainActor [weak self] in self?.processingWarning = warning }
                 }
             )
-            let mode = HotKeyMode(rawValue: hotkeyMode) ?? .toggle
+            let mode = HotKeyMode(rawValue: savedHotkeyMode) ?? .toggle
             let controller = GlobalHotKeyController(mode: mode) { [weak self] action in self?.perform(action) }
-            if isEnabled { try controller.register(HotKeyDescriptor.parse(hotkey)) }
+            if isEnabled { try controller.register(savedHotkey) }
             hotKeyController = controller
         } catch {
             pipeline = nil
@@ -473,8 +510,10 @@ final class VoiceStore: ObservableObject {
         llmProvider = settings.llmProvider
         llmBaseURL = settings.llmBaseURL
         llmModel = settings.llmModel
-        hotkey = settings.hotkey
-        hotkeyMode = settings.hotkeyMode
+        savedHotkey = HotKeyDescriptor.resolve(settings.hotkey)
+        hotkeyCandidate = savedHotkey
+        savedHotkeyMode = HotKeyMode(rawValue: settings.hotkeyMode)?.rawValue ?? "toggle"
+        hotkeyMode = savedHotkeyMode
         polishEnabled = settings.polishEnabled
     }
 
@@ -486,8 +525,8 @@ final class VoiceStore: ObservableObject {
         defaults.set(llmProvider, forKey: Keys.llmProvider)
         defaults.set(llmBaseURL, forKey: Keys.llmBaseURL)
         defaults.set(llmModel, forKey: Keys.llmModel)
-        defaults.set(hotkey, forKey: Keys.hotkey)
-        defaults.set(hotkeyMode, forKey: Keys.hotkeyMode)
+        defaults.set(savedHotkey.storageValue, forKey: Keys.hotkey)
+        defaults.set(savedHotkeyMode, forKey: Keys.hotkeyMode)
         defaults.set(polishEnabled, forKey: Keys.polishEnabled)
         defaults.set(structuredDictationEnabled, forKey: Keys.structuredEnabled)
         defaults.set(structuredDictationPrompt, forKey: Keys.structuredPrompt)
@@ -497,6 +536,16 @@ final class VoiceStore: ObservableObject {
         guard let persistentStore else { return }
         do { history = try persistentStore.history(limit: 20) }
         catch { errorMessage = "读取语音历史失败：\(error.localizedDescription)" }
+    }
+
+    private func commitHotKey(_ descriptor: HotKeyDescriptor, mode: HotKeyMode) {
+        savedHotkey = descriptor
+        savedHotkeyMode = mode.rawValue
+        hotkeyCandidate = descriptor
+        hotkeyMode = mode.rawValue
+        defaults.set(descriptor.storageValue, forKey: Keys.hotkey)
+        defaults.set(mode.rawValue, forKey: Keys.hotkeyMode)
+        hotkeySaveError = nil
     }
 
     private func saveKey(_ value: String, account: String) {
