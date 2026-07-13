@@ -5,6 +5,8 @@ import MacPilotVoice
 
 @MainActor
 final class VoiceStore: ObservableObject {
+    private static let maximumRecordingDuration: TimeInterval = 12 * 60
+
     @Published private(set) var stage: VoicePipelineStage = .idle
     @Published private(set) var inputLevel: Float = 0
     @Published private(set) var history: [VoiceHistoryEntry] = []
@@ -41,6 +43,7 @@ final class VoiceStore: ObservableObject {
     private var hotKeyController: GlobalHotKeyController?
     private var presentationAdapter = VoicePresentationAdapter()
     private var recordingStartedAt: Date?
+    private var recordingDeadline = RecordingDeadline(limit: VoiceStore.maximumRecordingDuration)
     private var recordingTimer: Task<Void, Never>?
     private var completionTask: Task<Void, Never>?
     private var operationTask: Task<Void, Never>?
@@ -303,8 +306,7 @@ final class VoiceStore: ObservableObject {
             let sttConfig = try makeSTTConfiguration()
             let transcriber = OpenAICompatibleSTT(configuration: sttConfig, apiKey: sttAPIKey, language: sttLanguage)
             let polisher: any Polishing = try makePolisher()
-            let maximumDuration = sttConfig.maximumDuration ?? 300
-            let audio = AVAudioCapture(maximumDuration: maximumDuration) { [weak self] level in
+            let audio = AVAudioCapture(maximumDuration: Self.maximumRecordingDuration) { [weak self] level in
                 Task { @MainActor [weak self] in self?.inputLevel = min(max(level * 8, 0), 1) }
             }
             pipeline = VoicePipeline(
@@ -371,7 +373,10 @@ final class VoiceStore: ObservableObject {
         capsuleState = presentationAdapter.consume(state)
         if state.stage == .outputting { lastProcessedText = state.outputText }
         if state.stage == .recording {
-            if recordingStartedAt == nil { recordingStartedAt = Date() }
+            if recordingStartedAt == nil {
+                recordingStartedAt = Date()
+                recordingDeadline.reset()
+            }
             startRecordingTimer()
         } else {
             stopRecordingTimer()
@@ -408,8 +413,13 @@ final class VoiceStore: ObservableObject {
         recordingTimer = Task { [weak self] in
             while !Task.isCancelled {
                 guard let store = self, let started = store.recordingStartedAt else { return }
-                store.presentationAdapter.updateRecording(level: store.inputLevel, elapsed: Date().timeIntervalSince(started))
+                let elapsed = Date().timeIntervalSince(started)
+                store.presentationAdapter.updateRecording(level: store.inputLevel, elapsed: elapsed)
                 store.capsuleState = store.presentationAdapter.displayState
+                if store.recordingDeadline.consume(elapsed: elapsed) {
+                    store.perform(.stopRecording)
+                    return
+                }
                 try? await Task.sleep(nanoseconds: 100_000_000)
             }
         }
@@ -632,6 +642,9 @@ final class VoiceStore: ObservableObject {
     private func describe(_ error: Error) -> String {
         switch error {
         case AudioCaptureError.microphonePermissionDenied: return "需要麦克风权限，请在系统设置的隐私与安全性中允许 MacPilot。"
+        case AudioCaptureError.maximumDurationExceeded: return "单次录音最长 12 分钟。"
+        case AudioCaptureError.emptyRecording: return "没有录到有效声音，请重试。"
+        case AudioCaptureError.invalidFormat, AudioCaptureError.engineUnavailable: return "无法使用当前麦克风录音，请检查输入设备后重试。"
         case AccessibleTextOutputError.accessibilityPermissionRequired: return "需要辅助功能权限，授权后才能把文字写入当前输入框。"
         case STTClientError.apiKeyRequired: return "请先在设置中填写转写服务 API Key。"
         case LLMClientError.apiKeyRequired: return "请先填写 AI 润色服务 API Key，或关闭 AI 润色。"

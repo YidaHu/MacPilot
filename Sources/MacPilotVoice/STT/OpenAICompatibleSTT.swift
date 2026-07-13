@@ -83,17 +83,48 @@ public final class OpenAICompatibleSTT: @unchecked Sendable, Transcribing {
         if configuration.apiKeyRequired && apiKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             throw STTClientError.apiKeyRequired
         }
-        if let maximumDuration = configuration.maximumDuration, audio.duration > maximumDuration {
-            throw STTClientError.invalidConfiguration("Recording exceeds provider duration limit")
+
+        let segments: [RecordedAudio]
+        if let maximumDuration = configuration.maximumDuration {
+            segments = try PCM16WAVSegmenter.split(audio.wavData, maximumDuration: maximumDuration)
+        } else {
+            segments = [audio]
         }
 
+        var texts: [String] = []
+        for (index, segment) in segments.enumerated() {
+            try Task.checkCancellation()
+            let fileName = segments.count > 1 ? "audio_part_\(index + 1).wav" : "recording.wav"
+            let text = try await transcribeWithRetry(segment, fileName: fileName)
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+            if !text.isEmpty { texts.append(text) }
+        }
+        let combined = texts.joined(separator: " ")
+        guard !combined.isEmpty else { throw STTClientError.emptyTranscript }
+        return combined
+    }
+
+    private func transcribeWithRetry(_ audio: RecordedAudio, fileName: String) async throws -> String {
+        for attempt in 0..<3 {
+            do {
+                try Task.checkCancellation()
+                return try await transcribeOnce(audio, fileName: fileName)
+            } catch {
+                if Task.isCancelled { throw CancellationError() }
+                guard attempt < 2, Self.isRetryable(error) else { throw error }
+            }
+        }
+        throw STTClientError.timeout
+    }
+
+    private func transcribeOnce(_ audio: RecordedAudio, fileName: String) async throws -> String {
         let boundary = "MacPilot-\(UUID().uuidString)"
         var request = URLRequest(url: configuration.endpoint)
         request.httpMethod = "POST"
         request.timeoutInterval = min(max(60, audio.duration + 60), 300)
         request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
         if !apiKey.isEmpty { request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization") }
-        request.httpBody = multipartBody(audio: audio, boundary: boundary)
+        request.httpBody = multipartBody(audio: audio, boundary: boundary, fileName: fileName)
 
         let data: Data
         let response: URLResponse
@@ -112,12 +143,21 @@ public final class OpenAICompatibleSTT: @unchecked Sendable, Transcribing {
         guard let object = try? JSONSerialization.jsonObject(with: data) as? [String: Any], let text = object["text"] as? String else {
             throw STTClientError.malformedResponse
         }
-        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else { throw STTClientError.emptyTranscript }
-        return trimmed
+        return text
     }
 
-    private func multipartBody(audio: RecordedAudio, boundary: String) -> Data {
+    private static func isRetryable(_ error: Error) -> Bool {
+        switch error {
+        case STTClientError.timeout, STTClientError.rateLimited:
+            return true
+        case let STTClientError.httpStatus(status):
+            return (500...599).contains(status)
+        default:
+            return false
+        }
+    }
+
+    private func multipartBody(audio: RecordedAudio, boundary: String, fileName: String) -> Data {
         var data = Data()
         func append(_ string: String) { data.append(Data(string.utf8)) }
         func field(_ name: String, _ value: String) {
@@ -129,7 +169,7 @@ public final class OpenAICompatibleSTT: @unchecked Sendable, Transcribing {
         if let language, !language.isEmpty, language != "multi" { field("language", language) }
         for (name, value) in configuration.extraFields.sorted(by: { $0.key < $1.key }) { field(name, value) }
         append("--\(boundary)\r\n")
-        append("Content-Disposition: form-data; name=\"file\"; filename=\"recording.wav\"\r\n")
+        append("Content-Disposition: form-data; name=\"file\"; filename=\"\(fileName)\"\r\n")
         append("Content-Type: audio/wav\r\n\r\n")
         data.append(audio.wavData)
         append("\r\n--\(boundary)--\r\n")

@@ -64,6 +64,83 @@ final class STTClientTests: XCTestCase {
         XCTAssertEqual(try STTProviderConfiguration.preset(.siliconFlow).model, "FunAudioLLM/SenseVoiceSmall")
     }
 
+    func testGLMTranscribesLongRecordingAsOrderedSegments() async throws {
+        var filenames: [String] = []
+        MockURLProtocol.handler = { request in
+            let body = try self.requestBody(request)
+            filenames.append(try self.multipartFilename(body))
+            return (200, Data(#"{"text":"part \#(filenames.count)"}"#.utf8))
+        }
+        let client = OpenAICompatibleSTT(
+            configuration: try .preset(.glmASR),
+            apiKey: "key",
+            session: makeSession()
+        )
+
+        let result = try await client.transcribe(longAudio(seconds: 60))
+
+        XCTAssertEqual(result, "part 1 part 2 part 3")
+        XCTAssertEqual(filenames, ["audio_part_1.wav", "audio_part_2.wav", "audio_part_3.wav"])
+    }
+
+    func testProviderWithoutRequestLimitSendsLongRecordingOnce() async throws {
+        var requestCount = 0
+        MockURLProtocol.handler = { _ in
+            requestCount += 1
+            return (200, Data(#"{"text":"one request"}"#.utf8))
+        }
+        let client = OpenAICompatibleSTT(
+            configuration: try .preset(.openAIWhisper),
+            apiKey: "key",
+            session: makeSession()
+        )
+
+        let result = try await client.transcribe(longAudio(seconds: 60))
+
+        XCTAssertEqual(result, "one request")
+        XCTAssertEqual(requestCount, 1)
+    }
+
+    func testServerFailureRetriesAChunkAtMostThreeTimes() async throws {
+        var requestCount = 0
+        MockURLProtocol.handler = { _ in
+            requestCount += 1
+            if requestCount < 3 { return (500, Data("error".utf8)) }
+            return (200, Data(#"{"text":"recovered"}"#.utf8))
+        }
+        let client = OpenAICompatibleSTT(
+            configuration: try .preset(.glmASR),
+            apiKey: "key",
+            session: makeSession()
+        )
+
+        let result = try await client.transcribe(longAudio(seconds: 1))
+
+        XCTAssertEqual(result, "recovered")
+        XCTAssertEqual(requestCount, 3)
+    }
+
+    func testUnauthorizedResponseIsNotRetried() async {
+        var requestCount = 0
+        MockURLProtocol.handler = { _ in
+            requestCount += 1
+            return (401, Data("error".utf8))
+        }
+        let client = OpenAICompatibleSTT(
+            configuration: try! .preset(.glmASR),
+            apiKey: "key",
+            session: makeSession()
+        )
+
+        do {
+            _ = try await client.transcribe(longAudio(seconds: 1))
+            XCTFail("Expected unauthorized error")
+        } catch {
+            XCTAssertEqual(error as? STTClientError, .unauthorized)
+            XCTAssertEqual(requestCount, 1)
+        }
+    }
+
     private func makeSession() -> URLSession {
         let configuration = URLSessionConfiguration.ephemeral
         configuration.protocolClasses = [MockURLProtocol.self]
@@ -72,6 +149,44 @@ final class STTClientTests: XCTestCase {
 
     private func audio() -> RecordedAudio {
         RecordedAudio(wavData: Data("RIFF-test".utf8), duration: 1)
+    }
+
+    private func longAudio(seconds: Int) -> RecordedAudio {
+        let pcm = Data(repeating: 0x2a, count: seconds * 16_000 * 2)
+        var wav = Data("RIFF".utf8)
+        append(UInt32(36 + pcm.count), to: &wav)
+        wav.append(Data("WAVEfmt ".utf8))
+        append(UInt32(16), to: &wav)
+        append(UInt16(1), to: &wav)
+        append(UInt16(1), to: &wav)
+        append(UInt32(16_000), to: &wav)
+        append(UInt32(32_000), to: &wav)
+        append(UInt16(2), to: &wav)
+        append(UInt16(16), to: &wav)
+        wav.append(Data("data".utf8))
+        append(UInt32(pcm.count), to: &wav)
+        wav.append(pcm)
+        return RecordedAudio(wavData: wav, duration: TimeInterval(seconds))
+    }
+
+    private func multipartFilename(_ body: Data) throws -> String {
+        let text = String(decoding: body, as: UTF8.self)
+        let prefix = "filename=\""
+        let start = try XCTUnwrap(text.range(of: prefix)?.upperBound)
+        let end = try XCTUnwrap(text[start...].firstIndex(of: "\""))
+        return String(text[start..<end])
+    }
+
+    private func append(_ value: UInt16, to data: inout Data) {
+        data.append(UInt8(value & 0xff))
+        data.append(UInt8(value >> 8))
+    }
+
+    private func append(_ value: UInt32, to data: inout Data) {
+        data.append(UInt8(value & 0xff))
+        data.append(UInt8((value >> 8) & 0xff))
+        data.append(UInt8((value >> 16) & 0xff))
+        data.append(UInt8(value >> 24))
     }
 
     private func requestBody(_ request: URLRequest) throws -> Data {
