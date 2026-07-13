@@ -6,14 +6,20 @@ import SwiftUI
 struct HotKeyRecorder: NSViewRepresentable {
     let descriptor: HotKeyDescriptor
     let onCapture: @MainActor (HotKeyDescriptor) -> Void
+    let onRecordingChanged: @MainActor (Bool) -> Void
 
     func makeNSView(context: Context) -> RecorderButton {
-        RecorderButton(descriptor: descriptor, onCapture: onCapture)
+        RecorderButton(
+            descriptor: descriptor,
+            onCapture: onCapture,
+            onRecordingChanged: onRecordingChanged
+        )
     }
 
     func updateNSView(_ view: RecorderButton, context: Context) {
         view.descriptor = descriptor
         view.onCapture = onCapture
+        view.onRecordingChanged = onRecordingChanged
         view.refreshTitle()
     }
 }
@@ -22,11 +28,17 @@ struct HotKeyRecorder: NSViewRepresentable {
 final class RecorderButton: NSButton {
     var descriptor: HotKeyDescriptor
     var onCapture: @MainActor (HotKeyDescriptor) -> Void
+    var onRecordingChanged: @MainActor (Bool) -> Void
     private var isRecording = false
 
-    init(descriptor: HotKeyDescriptor, onCapture: @escaping @MainActor (HotKeyDescriptor) -> Void) {
+    init(
+        descriptor: HotKeyDescriptor,
+        onCapture: @escaping @MainActor (HotKeyDescriptor) -> Void,
+        onRecordingChanged: @escaping @MainActor (Bool) -> Void
+    ) {
         self.descriptor = descriptor
         self.onCapture = onCapture
+        self.onRecordingChanged = onRecordingChanged
         super.init(frame: .zero)
         bezelStyle = .rounded
         setButtonType(.momentaryPushIn)
@@ -39,7 +51,9 @@ final class RecorderButton: NSButton {
     override var acceptsFirstResponder: Bool { true }
 
     override func mouseDown(with event: NSEvent) {
+        guard !isRecording else { return }
         isRecording = true
+        onRecordingChanged(true)
         refreshTitle()
         _ = window?.makeFirstResponder(self)
     }
@@ -83,7 +97,9 @@ final class RecorderButton: NSButton {
     }
 
     private func finishRecording() {
+        guard isRecording else { return }
         isRecording = false
+        onRecordingChanged(false)
         refreshTitle()
     }
 }

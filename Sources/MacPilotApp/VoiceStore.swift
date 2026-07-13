@@ -140,6 +140,20 @@ final class VoiceStore: ObservableObject {
         hotkeySaveError = nil
     }
 
+    func setHotKeyCaptureActive(_ active: Bool) {
+        guard isEnabled, let controller = hotKeyController else { return }
+        if active {
+            controller.unregister()
+            return
+        }
+        do {
+            try controller.register(savedHotkey)
+            hotkeySaveError = nil
+        } catch {
+            hotkeySaveError = "无法恢复当前快捷键，请重新保存快捷键。"
+        }
+    }
+
     func saveHotKeyConfiguration() {
         let candidate = hotkeyCandidate
         let mode = HotKeyMode(rawValue: hotkeyMode) ?? .toggle

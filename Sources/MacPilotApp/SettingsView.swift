@@ -205,7 +205,8 @@ struct SettingsView: View {
                         Spacer()
                         HotKeyRecorder(
                             descriptor: voice.hotkeyCandidate,
-                            onCapture: voice.setHotKeyCandidate
+                            onCapture: voice.setHotKeyCandidate,
+                            onRecordingChanged: voice.setHotKeyCaptureActive
                         )
                         .frame(width: 300)
                     }
