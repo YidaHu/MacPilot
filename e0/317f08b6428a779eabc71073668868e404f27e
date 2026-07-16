@@ -1,0 +1,24 @@
+native-macos/Sources/MacPilotCore/SystemSnapshot.swift
+  s_895396b36ea4cf::t_2f2b1a12717b34 2-91
+  s_895396b36ea4cf::t_5c64eea3e3db0a 1
+native-macos/Sources/MacPilotCore/AppStore.swift
+  s_895396b36ea4cf::t_2f2b1a12717b34 1-23
+native-macos/Tests/MacPilotCoreTests/AppStoreTests.swift
+  s_895396b36ea4cf::t_f85ad24c49511d 4-60,63-84
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "e0317f08b6428a779eabc71073668868e404f27e",
+  "prompts": {},
+  "sessions": {
+    "s_895396b36ea4cf": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f54e6-6b50-7533-9eea-f7b602d60720",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "YidaHu <huyidada@gmail.com>"
+    }
+  }
+}

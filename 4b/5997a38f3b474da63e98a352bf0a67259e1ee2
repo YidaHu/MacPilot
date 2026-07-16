@@ -1,0 +1,35 @@
+src/i18n/locales/en.json
+  s_e06b0c2cc8f2e4::t_249cdacaeb36cc 199,214
+  s_e06b0c2cc8f2e4::t_8c7eeb80a5099e 361-362
+src/lib/__tests__/capsuleError.test.ts
+  s_e06b0c2cc8f2e4::t_fad8d45e6d8abc 25-34
+src/i18n/locales/zh.json
+  s_e06b0c2cc8f2e4::t_8c7eeb80a5099e 361-362
+  s_e06b0c2cc8f2e4::t_249cdacaeb36cc 199,214
+src/components/Capsule/__tests__/CapsulePolishing.test.tsx
+  s_e06b0c2cc8f2e4::t_fad8d45e6d8abc 1-54
+src/components/History/__tests__/History.test.tsx
+  s_e06b0c2cc8f2e4::t_fad8d45e6d8abc 1-81
+src/lib/capsuleError.ts
+  s_e06b0c2cc8f2e4::t_249cdacaeb36cc 20,39
+src/components/History/index.tsx
+  s_e06b0c2cc8f2e4::t_249cdacaeb36cc 127-135
+src/components/Capsule/CapsulePolishing.tsx
+  s_e06b0c2cc8f2e4::t_249cdacaeb36cc 5,10-12,42
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "4b5997a38f3b474da63e98a352bf0a67259e1ee2",
+  "prompts": {},
+  "sessions": {
+    "s_e06b0c2cc8f2e4": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4af0-a16a-79c0-9589-a7e5c0e645e6",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "YidaHu <huyidada@gmail.com>"
+    }
+  }
+}

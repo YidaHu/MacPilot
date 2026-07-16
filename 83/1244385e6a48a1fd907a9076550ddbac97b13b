@@ -1,0 +1,21 @@
+native-macos/Sources/MacPilotFan/FanHelperClient.swift
+  s_895396b36ea4cf::t_16b505ad8575ce 9,11-14,16-18,21-22,25-34,63-64,74-101
+native-macos/Tests/MacPilotFanTests/FanHelperClientTests.swift
+  s_895396b36ea4cf::t_490bfceacab742 5-17
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "831244385e6a48a1fd907a9076550ddbac97b13b",
+  "prompts": {},
+  "sessions": {
+    "s_895396b36ea4cf": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f54e6-6b50-7533-9eea-f7b602d60720",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "YidaHu <huyidada@gmail.com>"
+    }
+  }
+}

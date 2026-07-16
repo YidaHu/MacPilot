@@ -1,0 +1,20 @@
+docs/superpowers/specs/2026-07-12-macpilot-native-menubar-design.md
+  s_895396b36ea4cf::t_722da4998f8719 13,49,62,93,121,150-153
+  s_895396b36ea4cf::t_0a98d441b42bd4 212,214-258,268,281-291,293,298,302,308,313,315,321,326,332-334,340,344,347-348,354,361
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "40e06caed920191d12450e9e9031c620e362975d",
+  "prompts": {},
+  "sessions": {
+    "s_895396b36ea4cf": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f54e6-6b50-7533-9eea-f7b602d60720",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "YidaHu <huyidada@gmail.com>"
+    }
+  }
+}

@@ -1,0 +1,25 @@
+native-macos/Sources/MacPilotCalendar/RocketOverlayWindow.swift
+  s_895396b36ea4cf::t_f8160d62cecf71 69,97-98,107,114
+  s_895396b36ea4cf::t_b814147e309c47 41-42,47,51,53,61-68,70-96,99-106,108-113,115-131
+  s_895396b36ea4cf::t_becf854c2b8893 132
+native-macos/Tests/MacPilotCalendarTests/RocketGeometryTests.swift
+  s_895396b36ea4cf::t_4862c86dd490c5 1-12
+native-macos/Sources/MacPilotCalendar/RocketGeometry.swift
+  s_895396b36ea4cf::t_b814147e309c47 1-27
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "6b9e1665a83b2d8210feba9887e9f39ce58168e1",
+  "prompts": {},
+  "sessions": {
+    "s_895396b36ea4cf": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f54e6-6b50-7533-9eea-f7b602d60720",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "YidaHu <huyidada@gmail.com>"
+    }
+  }
+}

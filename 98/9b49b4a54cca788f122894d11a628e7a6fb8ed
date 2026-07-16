@@ -1,0 +1,19 @@
+docs/superpowers/specs/2026-07-13-custom-voice-hotkey-design.md
+  s_14fcc1e13a8c7a::t_83af6255de7b39 1-64
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "989b49b4a54cca788f122894d11a628e7a6fb8ed",
+  "prompts": {},
+  "sessions": {
+    "s_14fcc1e13a8c7a": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f58fc-20a4-74a0-b7f2-6abd68e76a1f",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "YidaHu <huyidada@gmail.com>"
+    }
+  }
+}

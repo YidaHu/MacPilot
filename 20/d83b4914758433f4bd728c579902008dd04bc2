@@ -1,0 +1,28 @@
+native-macos/Sources/MacPilotVoice/VoicePersistentStore.swift
+  s_895396b36ea4cf::t_909d6b5eee4b59 16-19,69-84,140-145
+  s_895396b36ea4cf::t_75a8af82860fb3 146
+native-macos/Tests/MacPilotVoiceTests/VoicePersistentStoreTests.swift
+  s_895396b36ea4cf::t_dafb7992802adc 15-26
+native-macos/Sources/MacPilotApp/VoicePlaceholderView.swift
+  s_895396b36ea4cf::t_1ff9ea71fdc826 88-96,107-112
+  s_895396b36ea4cf::t_acd237c97a7f4e 113
+native-macos/Sources/MacPilotApp/VoiceStore.swift
+  s_895396b36ea4cf::t_40a4b2d7a555a3 128-129,135-137
+  s_895396b36ea4cf::t_1ff9ea71fdc826 109-127,130-134,138-149
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "20d83b4914758433f4bd728c579902008dd04bc2",
+  "prompts": {},
+  "sessions": {
+    "s_895396b36ea4cf": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f54e6-6b50-7533-9eea-f7b602d60720",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "YidaHu <huyidada@gmail.com>"
+    }
+  }
+}

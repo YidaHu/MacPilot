@@ -1,0 +1,50 @@
+Sources/MacPilotApp/VoiceStore.swift
+  manual_repair_20260713T035044Z 8-9,46,309,376-379,416-417,419-422,645-647
+Sources/MacPilotVoice/PCM16WAVSegmenter.swift
+  manual_repair_20260713T035044Z 1-117
+Sources/MacPilotVoice/RecordingDeadline.swift
+  manual_repair_20260713T035044Z 1-24
+Sources/MacPilotVoice/STT/OpenAICompatibleSTT.swift
+  manual_repair_20260713T035044Z 86-115,117-118,120,127,146-157,160,172
+Tests/MacPilotVoiceTests/RecordingDeadlineTests.swift
+  manual_repair_20260713T035044Z 1-21
+Tests/MacPilotVoiceTests/STTClientTests.swift
+  manual_repair_20260713T035044Z 67-143,154-191
+Tests/MacPilotVoiceTests/WAVSegmenterTests.swift
+  manual_repair_20260713T035044Z 1-87
+docs/superpowers/plans/2026-07-13-long-dictation-chunking.md
+  manual_repair_20260713T035044Z 1-202
+docs/superpowers/specs/2026-07-13-long-dictation-chunking-design.md
+  manual_repair_20260713T035044Z 1-79
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "93133810477e172bdd4c465fe4a49360c13be34c",
+  "prompts": {
+    "manual_repair_20260713T035044Z": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "manual_repair_20260713T035044Z",
+        "model": "gpt-5.4"
+      },
+      "human_author": "YidaHu",
+      "messages": [
+        {
+          "type": "user",
+          "timestamp": "2026-07-13T03:50:44Z",
+          "text": "用户确认实现最长 12 分钟语音录入，超长录音自动按 GLM-ASR 限制分段转录，并要求推送到正确的 MacPilot 远程仓库。"
+        },
+        {
+          "type": "assistant",
+          "timestamp": "2026-07-13T03:50:44Z",
+          "text": "Implemented 12-minute recording auto-stop, PCM WAV segmentation, ordered GLM-ASR transcription with retries, tests, and design documentation."
+        }
+      ],
+      "total_additions": 710,
+      "total_deletions": 12,
+      "accepted_lines": 710,
+      "overriden_lines": 0
+    }
+  }
+}

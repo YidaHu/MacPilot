@@ -1,0 +1,39 @@
+native-macos/Sources/MacPilotApp/OverviewView.swift
+  s_895396b36ea4cf::t_594e0a6725cd49 1-177
+native-macos/Sources/MacPilotApp/MenuBarController.swift
+  s_895396b36ea4cf::t_9ce26d17a3ffec 55-58
+  s_895396b36ea4cf::t_594e0a6725cd49 1-54,59-76
+native-macos/Sources/MacPilotApp/VoicePlaceholderView.swift
+  s_895396b36ea4cf::t_594e0a6725cd49 1-32
+native-macos/Sources/MacPilotApp/SettingsView.swift
+  s_895396b36ea4cf::t_594e0a6725cd49 1-120
+native-macos/Sources/MacPilotApp/RootPanelView.swift
+  s_895396b36ea4cf::t_594e0a6725cd49 1-65
+native-macos/Sources/MacPilotApp/FansPlaceholderView.swift
+  s_895396b36ea4cf::t_594e0a6725cd49 1-11
+native-macos/Sources/MacPilotCore/AppPresentation.swift
+  s_895396b36ea4cf::t_264f01e6333521 1-70
+native-macos/Sources/MacPilotApp/main.swift
+  s_895396b36ea4cf::t_594e0a6725cd49 2-3,6-9,25-33
+  s_895396b36ea4cf::t_b897f5ef2b2a2f 11-24
+native-macos/Sources/MacPilotApp/ToolsPlaceholderView.swift
+  s_895396b36ea4cf::t_594e0a6725cd49 1-11
+native-macos/Tests/MacPilotCoreTests/PresentationModelTests.swift
+  s_895396b36ea4cf::t_e11d40e105dfc8 1-19
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "e5be05660d50f7e6d7dfeb11c01a4b2909b1631b",
+  "prompts": {},
+  "sessions": {
+    "s_895396b36ea4cf": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f54e6-6b50-7533-9eea-f7b602d60720",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "YidaHu <huyidada@gmail.com>"
+    }
+  }
+}

@@ -1,0 +1,20 @@
+docs/superpowers/specs/2026-07-10-structured-dictation-mode-design.md
+  s_e06b0c2cc8f2e4::t_4bfc357861bfe0 90
+  s_e06b0c2cc8f2e4::t_3734370df009d2 1-89,91-184
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "d2a2a2c0e9335c77f738e74cd2d6f316e9fec79f",
+  "prompts": {},
+  "sessions": {
+    "s_e06b0c2cc8f2e4": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4af0-a16a-79c0-9589-a7e5c0e645e6",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "YidaHu <huyidada@gmail.com>"
+    }
+  }
+}

@@ -1,0 +1,25 @@
+native-macos/Tests/MacPilotMetricsTests/MemoryMathTests.swift
+  s_895396b36ea4cf::t_49ba81f347ba05 1-18
+native-macos/Tests/MacPilotMetricsTests/CPUTicksTests.swift
+  s_895396b36ea4cf::t_49ba81f347ba05 1-22
+native-macos/Sources/MacPilotMetrics/MemorySampler.swift
+  s_895396b36ea4cf::t_6479539eb3afee 1-68
+native-macos/Sources/MacPilotMetrics/CPUSampler.swift
+  s_895396b36ea4cf::t_6479539eb3afee 1-98
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "ac64a45e66e74f7ecb39e2b7294045b279549b72",
+  "prompts": {},
+  "sessions": {
+    "s_895396b36ea4cf": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f54e6-6b50-7533-9eea-f7b602d60720",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "YidaHu <huyidada@gmail.com>"
+    }
+  }
+}

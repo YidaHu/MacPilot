@@ -1,0 +1,27 @@
+src-tauri/src/storage/mod.rs
+  s_e06b0c2cc8f2e4::t_b4235f3d6dbac3 214-215,238-243,252-255,264-265,281-283,295-296,313-324
+  s_e06b0c2cc8f2e4::t_ba4b500a4460e0 411-485
+  s_e06b0c2cc8f2e4::t_9f03f96341f0f2 325-328,486-487
+src/stores/appStore.ts
+  s_e06b0c2cc8f2e4::t_b4235f3d6dbac3 51-52
+src-tauri/src/pipeline.rs
+  s_e06b0c2cc8f2e4::t_b4235f3d6dbac3 1268,1530,1541,1544-1545
+src/stores/__tests__/appStore.test.ts
+  s_e06b0c2cc8f2e4::t_b4235f3d6dbac3 74-75,81-82
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "0221a373b800abef21eece4b92f79980eb8c65b7",
+  "prompts": {},
+  "sessions": {
+    "s_e06b0c2cc8f2e4": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4af0-a16a-79c0-9589-a7e5c0e645e6",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "YidaHu <huyidada@gmail.com>"
+    }
+  }
+}

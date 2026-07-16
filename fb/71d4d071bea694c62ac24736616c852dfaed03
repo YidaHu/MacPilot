@@ -1,0 +1,22 @@
+native-macos/Tests/MacPilotVoiceTests/GlobalHotKeyTests.swift
+  s_14fcc1e13a8c7a::t_fe74bec36d9351 17-62
+native-macos/Sources/MacPilotVoice/GlobalHotKeyController.swift
+  s_14fcc1e13a8c7a::t_d66a907dba54e3 109,126
+  s_14fcc1e13a8c7a::t_92a9a5ad5b95ee 39-58,64-78,81,92-94,97-108,110-125,127-139
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "fb71d4d071bea694c62ac24736616c852dfaed03",
+  "prompts": {},
+  "sessions": {
+    "s_14fcc1e13a8c7a": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f58fc-20a4-74a0-b7f2-6abd68e76a1f",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "YidaHu <huyidada@gmail.com>"
+    }
+  }
+}

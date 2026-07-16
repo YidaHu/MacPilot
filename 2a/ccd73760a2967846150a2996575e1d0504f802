@@ -1,0 +1,20 @@
+native-macos/README.md
+  s_895396b36ea4cf::t_055202689ae7af 18-21,23,38-71
+  s_895396b36ea4cf::t_1c272cfb5e9974 72
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "2accd73760a2967846150a2996575e1d0504f802",
+  "prompts": {},
+  "sessions": {
+    "s_895396b36ea4cf": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f54e6-6b50-7533-9eea-f7b602d60720",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "YidaHu <huyidada@gmail.com>"
+    }
+  }
+}

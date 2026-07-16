@@ -1,0 +1,25 @@
+native-macos/Tests/MacPilotSystemActionsTests/PowerAssertionControllerTests.swift
+  s_895396b36ea4cf::t_adac09c914df1e 1-10,16-24,26,28-35,41-49,51-53,55-59
+  s_895396b36ea4cf::t_70ce1e4f87461b 11-15,25,27,36-40
+  s_895396b36ea4cf::t_adde175764e97d 50,54
+native-macos/Sources/MacPilotSystemActions/PowerAssertionController.swift
+  s_895396b36ea4cf::t_adde175764e97d 1-85
+native-macos/Sources/MacPilotApp/CleanKeyboardWindow.swift
+  s_895396b36ea4cf::t_d51891e0c22f9a 1-172
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "aa426219ede55e622d070258f836104fe7e64865",
+  "prompts": {},
+  "sessions": {
+    "s_895396b36ea4cf": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f54e6-6b50-7533-9eea-f7b602d60720",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "YidaHu <huyidada@gmail.com>"
+    }
+  }
+}

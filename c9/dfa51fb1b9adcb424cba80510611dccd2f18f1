@@ -1,0 +1,25 @@
+native-macos/Tests/MacPilotVoiceTests/LegacyImporterTests.swift
+  s_895396b36ea4cf::t_3d2b6242a337f5 25-26
+native-macos/Sources/MacPilotVoice/LegacyOpenTypelessImporter.swift
+  s_895396b36ea4cf::t_3d2b6242a337f5 75,87-89,93
+native-macos/README.md
+  s_895396b36ea4cf::t_dafbe70cd864f8 19-20,22,48,56,67,72
+native-macos/Sources/MacPilotApp/VoiceStore.swift
+  s_895396b36ea4cf::t_3d2b6242a337f5 460-469
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "c9dfa51fb1b9adcb424cba80510611dccd2f18f1",
+  "prompts": {},
+  "sessions": {
+    "s_895396b36ea4cf": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f54e6-6b50-7533-9eea-f7b602d60720",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "YidaHu <huyidada@gmail.com>"
+    }
+  }
+}

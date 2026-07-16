@@ -1,0 +1,30 @@
+native-macos/Sources/MacPilotVoice/AVAudioCapture.swift
+  s_895396b36ea4cf::t_1297d301af8326 1-105
+native-macos/Sources/MacPilotVoice/PCM16WAVEncoder.swift
+  s_895396b36ea4cf::t_dbe37e5a0640f6 1-75
+native-macos/Tests/MacPilotVoiceTests/PCMBufferTests.swift
+  s_895396b36ea4cf::t_dd4a2ed74ff2d6 1-40
+native-macos/Tests/MacPilotVoiceTests/GlobalHotKeyTests.swift
+  s_895396b36ea4cf::t_61a7e3d38e8175 1-23
+native-macos/Resources/Info.plist
+  s_895396b36ea4cf::t_1297d301af8326 27-30
+native-macos/Sources/MacPilotVoice/GlobalHotKeyController.swift
+  s_895396b36ea4cf::t_9b9e71495b0efd 73-76,94
+  s_895396b36ea4cf::t_1297d301af8326 1-72,77-93,95-129
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "3f3dafbc59b95085fbc0568bef12026787883400",
+  "prompts": {},
+  "sessions": {
+    "s_895396b36ea4cf": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f54e6-6b50-7533-9eea-f7b602d60720",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "YidaHu <huyidada@gmail.com>"
+    }
+  }
+}
