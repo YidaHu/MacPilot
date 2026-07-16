@@ -1,0 +1,43 @@
+Sources/MacPilotVoice/VoicePipeline.swift
+  s_dee31b40cb1515::t_b611e09058c126 16,42-44,47,52,55-59
+Sources/MacPilotApp/FloatingVoiceCapsuleView.swift
+  s_dee31b40cb1515::t_8b01ff667a64ec 34
+Sources/MacPilotVoice/GlobalHotKeyController.swift
+  s_dee31b40cb1515::t_54ae92596edb88 8-18,39,210
+Sources/MacPilotVoice/VoiceOperationTracker.swift
+  s_dee31b40cb1515::t_cad6d0f3928b6a 1-157
+Sources/MacPilotVoice/KeychainStore.swift
+  s_dee31b40cb1515::t_4d9ebd01c66a15 16-30,37
+Tests/MacPilotVoiceTests/AudioCaptureLifecycleTests.swift
+  s_dee31b40cb1515::t_7a075ecc9646a5 1-36
+Sources/MacPilotApp/VoiceStore.swift
+  s_dee31b40cb1515::t_4b97e89e5c9108 50-52,99-101,107,114,117-120,135,143,251,309,313-323,348-349,353-356,360-363,375-383,388,397,399-407,415-417,422,424,460-462,645,690
+Tests/MacPilotVoiceTests/VoiceOperationCoordinatorTests.swift
+  s_dee31b40cb1515::t_3ab7f6d5173e30 1-132
+Tests/MacPilotVoiceTests/VoicePipelineTests.swift
+  s_dee31b40cb1515::t_0eef462ae7a355 156-203,221-261
+Sources/MacPilotVoice/AVAudioCapture.swift
+  s_dee31b40cb1515::t_430cc2f5650b35 4-38,40-41,44-45,57-71,74-77,79,83,85-90,97-103,123-132,134-135,138,140,143,157-168
+Tests/MacPilotVoiceTests/GlobalHotKeyTests.swift
+  s_dee31b40cb1515::t_c56ec5035bb850 5-25,32-49
+Tests/MacPilotVoiceTests/VoiceOperationTrackerTests.swift
+  s_dee31b40cb1515::t_e9fa3157dc42e3 1-24
+Tests/MacPilotVoiceTests/KeychainStoreTests.swift
+  s_dee31b40cb1515::t_4fb1e8ba5d4c26 2,16-69
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "cbfa33704ad5bb303b413e2f3c893fe0313941b1",
+  "prompts": {},
+  "sessions": {
+    "s_dee31b40cb1515": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f6ae2-83ee-7410-81c3-29c0c28eed65",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "YidaHu <huyidada@gmail.com>"
+    }
+  }
+}
