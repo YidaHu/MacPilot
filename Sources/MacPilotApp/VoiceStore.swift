@@ -47,6 +47,9 @@ final class VoiceStore: ObservableObject {
     private var recordingTimer: Task<Void, Never>?
     private var completionTask: Task<Void, Never>?
     private var operationTask: Task<Void, Never>?
+    private var operationCoordinator = VoiceOperationCoordinator()
+    private var runtimeCoordinator = VoiceRuntimeCoordinator()
+    private var isAwaitingPipelineTransition = false
     private var errorCollapseTask: Task<Void, Never>?
     private var processingWarning: VoicePipelineWarning?
     private var lastProcessedText: String?
@@ -93,22 +96,28 @@ final class VoiceStore: ObservableObject {
         }
     }
 
-    var canRecord: Bool { isEnabled && pipeline != nil && (stage == .idle || stage == .recording) }
+    var canRecord: Bool {
+        isEnabled && pipeline != nil && operationCoordinator.canToggleRecording
+    }
     var capsuleSize: CapsuleSize { CapsuleLayout.size(for: capsuleState) }
     var hotkey: String { savedHotkey.displayValue }
 
     func toggleRecording() {
         guard canRecord else { return }
-        perform(stage == .recording ? .stopRecording : .startRecording)
+        perform(operationCoordinator.isRecordingSession ? .stopRecording : .startRecording)
     }
 
     func setEnabled(_ enabled: Bool) {
         isEnabled = enabled
         defaults.set(enabled, forKey: Keys.enabled)
         if enabled {
-            rebuildRuntime()
+            requestRuntimeRebuild()
         } else {
             hotKeyController?.unregister()
+            operationTask?.cancel()
+            operationTask = nil
+            operationCoordinator.cancel()
+            isAwaitingPipelineTransition = false
             Task { await pipeline?.abort() }
         }
     }
@@ -123,7 +132,7 @@ final class VoiceStore: ObservableObject {
         if enabled { polishEnabled = true }
         defaults.set(enabled, forKey: Keys.structuredEnabled)
         defaults.set(polishEnabled, forKey: Keys.polishEnabled)
-        rebuildRuntime()
+        requestRuntimeRebuild()
     }
 
     func setPolishEnabled(_ enabled: Bool) {
@@ -131,7 +140,7 @@ final class VoiceStore: ObservableObject {
         if !enabled { structuredDictationEnabled = false }
         defaults.set(polishEnabled, forKey: Keys.polishEnabled)
         defaults.set(structuredDictationEnabled, forKey: Keys.structuredEnabled)
-        rebuildRuntime()
+        requestRuntimeRebuild()
     }
 
     func resetStructuredPrompt() {
@@ -239,6 +248,7 @@ final class VoiceStore: ObservableObject {
     func cancelCurrentOperation() {
         operationTask?.cancel()
         operationTask = nil
+        operationCoordinator.cancel()
         hotKeyController?.resetInteraction()
         Task { [weak self] in
             guard let store = self else { return }
@@ -296,10 +306,21 @@ final class VoiceStore: ObservableObject {
         completionTask?.cancel()
         errorCollapseTask?.cancel()
         operationTask?.cancel()
+        operationCoordinator.cancel()
         Task { await pipeline?.abort() }
     }
 
-    private func rebuildRuntime() {
+    private func requestRuntimeRebuild() {
+        switch runtimeCoordinator.requestRebuild(
+            during: stage,
+            transitionPending: isAwaitingPipelineTransition
+        ) {
+        case let .rebuild(generation): rebuildRuntime(generation: generation)
+        case .deferred: break
+        }
+    }
+
+    private func rebuildRuntime(generation: UUID) {
         hotKeyController?.unregister()
         guard let persistentStore else { return }
         do {
@@ -324,15 +345,22 @@ final class VoiceStore: ObservableObject {
                 ),
                 onTransition: { [weak self] state in
                     Task { @MainActor [weak self] in
-                        self?.handleTransition(state)
+                        guard let self, self.runtimeCoordinator.accepts(generation) else { return }
+                        self.handleTransition(state)
                     }
                 },
                 onWarning: { [weak self] warning in
-                    Task { @MainActor [weak self] in self?.processingWarning = warning }
+                    Task { @MainActor [weak self] in
+                        guard let self, self.runtimeCoordinator.accepts(generation) else { return }
+                        self.processingWarning = warning
+                    }
                 }
             )
             let mode = HotKeyMode(rawValue: savedHotkeyMode) ?? .toggle
-            let controller = GlobalHotKeyController(mode: mode) { [weak self] action in self?.perform(action) }
+            let controller = GlobalHotKeyController(mode: mode) { [weak self] action in
+                guard let self, self.runtimeCoordinator.accepts(generation) else { return }
+                self.perform(action)
+            }
             if isEnabled { try controller.register(savedHotkey) }
             hotKeyController = controller
         } catch {
@@ -344,10 +372,20 @@ final class VoiceStore: ObservableObject {
 
     private func perform(_ action: HotKeyAction) {
         guard isEnabled, let pipeline else { return }
+        let operationID: UUID
+        switch operationCoordinator.begin(action, during: stage) {
+        case let .accepted(id):
+            operationID = id
+            isAwaitingPipelineTransition = true
+        case let .rejected(recording):
+            hotKeyController?.synchronizeInteraction(recording: recording)
+            return
+        }
         errorMessage = nil
         operationTask?.cancel()
         operationTask = Task { [weak self] in
             guard let store = self else { return }
+            var succeeded = false
             do {
                 switch action {
                 case .startRecording: _ = try await pipeline.startRecording()
@@ -356,7 +394,17 @@ final class VoiceStore: ObservableObject {
                     store.reloadHistory()
                 case .none: break
                 }
+                succeeded = true
             } catch {
+                guard store.operationCoordinator.shouldPresentError(
+                    for: operationID,
+                    taskIsCancelled: Task.isCancelled
+                ) else {
+                    if store.operationCoordinator.finish(operationID, succeeded: false) {
+                        store.operationTask = nil
+                    }
+                    return
+                }
                 store.hotKeyController?.resetInteraction()
                 let message = store.describe(error)
                 if error as? AccessibleTextOutputError == .accessibilityPermissionRequired {
@@ -364,12 +412,16 @@ final class VoiceStore: ObservableObject {
                 }
                 store.showCapsuleError(message, section: store.settingsSection(for: error))
             }
-            store.operationTask = nil
+            if store.operationCoordinator.finish(operationID, succeeded: succeeded) {
+                store.operationTask = nil
+            }
         }
     }
 
     private func handleTransition(_ state: VoicePipelineState) {
+        isAwaitingPipelineTransition = false
         stage = state.stage
+        hotKeyController?.synchronizeInteraction(recording: state.stage == .recording)
         capsuleState = presentationAdapter.consume(state)
         if state.stage == .outputting { lastProcessedText = state.outputText }
         if state.stage == .recording {
@@ -404,6 +456,9 @@ final class VoiceStore: ObservableObject {
                     store.capsuleState = store.presentationAdapter.displayState
                     store.lastProcessedText = nil
                 }
+            }
+            if let generation = runtimeCoordinator.takeDeferredRebuild(during: .idle), isEnabled {
+                rebuildRuntime(generation: generation)
             }
         }
     }
@@ -518,7 +573,6 @@ final class VoiceStore: ObservableObject {
                 }
                 if let migrationError = data.migrationError { store.errorMessage = migrationError }
                 store.refreshKeyStatus()
-                store.rebuildRuntime()
                 store.reloadKeysAndRebuild()
             case let .failure(error):
                 store.errorMessage = "无法初始化语音服务：\(error.localizedDescription)"
@@ -588,7 +642,7 @@ final class VoiceStore: ObservableObject {
                 if account == "llm.\(store.llmProvider)" { store.llmAPIKey = value }
                 store.refreshKeyStatus()
                 store.errorMessage = nil
-                store.rebuildRuntime()
+                store.requestRuntimeRebuild()
             case let .failure(error): store.errorMessage = "保存密钥失败：\(error.localizedDescription)"
             }
         }
@@ -633,7 +687,7 @@ final class VoiceStore: ObservableObject {
                 store.sttAPIKey = sttKey
                 store.llmAPIKey = llmKey
                 store.refreshKeyStatus()
-                store.rebuildRuntime()
+                store.requestRuntimeRebuild()
             case let .failure(error): store.errorMessage = "读取钥匙串失败：\(error.localizedDescription)"
             }
         }

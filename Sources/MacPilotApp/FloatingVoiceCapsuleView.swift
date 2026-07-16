@@ -31,6 +31,7 @@ struct FloatingVoiceCapsuleView: View {
                     .scaleEffect(reduceMotion ? 1 : 1.02)
             }
             .buttonStyle(.plain)
+            .disabled(!store.canRecord)
             .help("开始语音输入")
         case let .recording(level, elapsed):
             HStack(spacing: 9) {

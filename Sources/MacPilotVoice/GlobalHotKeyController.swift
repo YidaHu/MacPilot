@@ -5,6 +5,17 @@ public enum HotKeyMode: String, Equatable, Sendable { case hold, toggle }
 public enum HotKeyEvent: Equatable, Sendable { case pressed, released }
 public enum HotKeyAction: Equatable, Sendable { case startRecording, stopRecording, none }
 
+public enum HotKeyActionPolicy {
+    public static func isAllowed(_ action: HotKeyAction, during stage: VoicePipelineStage) -> Bool {
+        switch (stage, action) {
+        case (.idle, .startRecording), (.recording, .stopRecording), (_, .none):
+            return true
+        default:
+            return false
+        }
+    }
+}
+
 public struct HotKeyInteractionState: Equatable, Sendable {
     public let mode: HotKeyMode
     private var recording = false
@@ -25,6 +36,7 @@ public struct HotKeyInteractionState: Equatable, Sendable {
     }
 
     public mutating func reset() { recording = false }
+    public mutating func synchronize(recording: Bool) { self.recording = recording }
 }
 
 public enum HotKeyError: Error, Equatable {
@@ -195,6 +207,7 @@ public final class GlobalHotKeyController {
     }
 
     public func resetInteraction() { interaction.reset() }
+    public func synchronizeInteraction(recording: Bool) { interaction.synchronize(recording: recording) }
 
     fileprivate func handle(kind: UInt32) {
         let event: HotKeyEvent = kind == UInt32(kEventHotKeyPressed) ? .pressed : .released

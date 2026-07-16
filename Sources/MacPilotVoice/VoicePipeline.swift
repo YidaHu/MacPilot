@@ -13,6 +13,7 @@ public actor VoicePipeline {
     private let onTransition: @Sendable (VoicePipelineState) -> Void
     private let onWarning: @Sendable (VoicePipelineWarning) -> Void
     private var activeSessionID: UUID?
+    private var startingSessionID: UUID?
 
     public init(
         audio: any AudioCapturing,
@@ -38,15 +39,24 @@ public actor VoicePipeline {
 
     @discardableResult
     public func startRecording() async throws -> UUID {
-        guard activeSessionID == nil else { throw VoicePipelineError.alreadyActive }
+        guard activeSessionID == nil, startingSessionID == nil else {
+            throw VoicePipelineError.alreadyActive
+        }
         let sessionID = UUID()
         activeSessionID = sessionID
+        startingSessionID = sessionID
         transition(.init(stage: .recording, sessionID: sessionID))
         do {
             try await audio.start()
             try requireActive(sessionID)
+            if startingSessionID == sessionID { startingSessionID = nil }
             return sessionID
         } catch {
+            // start() may resume after an abort (for example after the system
+            // microphone-permission sheet is dismissed). Always tear down any
+            // engine that appeared after the earlier abort.
+            await audio.cancel()
+            if startingSessionID == sessionID { startingSessionID = nil }
             if activeSessionID == sessionID { finishSession() }
             throw error
         }

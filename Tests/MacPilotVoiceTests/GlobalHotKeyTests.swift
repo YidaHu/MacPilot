@@ -2,12 +2,51 @@ import XCTest
 @testable import MacPilotVoice
 
 final class GlobalHotKeyTests: XCTestCase {
+    func testRecordingActionsAreRejectedWhilePipelineIsProcessing() {
+        let processingStages: [VoicePipelineStage] = [
+            .transcribing,
+            .polishing,
+            .structured,
+            .outputting
+        ]
+
+        for stage in processingStages {
+            XCTAssertFalse(HotKeyActionPolicy.isAllowed(.startRecording, during: stage))
+            XCTAssertFalse(HotKeyActionPolicy.isAllowed(.stopRecording, during: stage))
+        }
+    }
+
+    func testRecordingActionsMatchIdleAndRecordingStages() {
+        XCTAssertTrue(HotKeyActionPolicy.isAllowed(.startRecording, during: .idle))
+        XCTAssertFalse(HotKeyActionPolicy.isAllowed(.stopRecording, during: .idle))
+        XCTAssertFalse(HotKeyActionPolicy.isAllowed(.startRecording, during: .recording))
+        XCTAssertTrue(HotKeyActionPolicy.isAllowed(.stopRecording, during: .recording))
+    }
+
     func testResetMakesNextToggleActionStartAgain() {
         var state = HotKeyInteractionState(mode: .toggle)
         XCTAssertEqual(state.handle(.pressed), .startRecording)
         state.reset()
         XCTAssertEqual(state.handle(.pressed), .startRecording)
     }
+
+    func testSynchronizingExternalRecordingMakesToggleShortcutStopIt() {
+        var state = HotKeyInteractionState(mode: .toggle)
+
+        state.synchronize(recording: true)
+
+        XCTAssertEqual(state.handle(.pressed), .stopRecording)
+    }
+
+    func testSynchronizingExternalStopMakesNextToggleShortcutStart() {
+        var state = HotKeyInteractionState(mode: .toggle)
+        XCTAssertEqual(state.handle(.pressed), .startRecording)
+
+        state.synchronize(recording: false)
+
+        XCTAssertEqual(state.handle(.pressed), .startRecording)
+    }
+
     func testParsesLegacyOptionSlashShortcut() throws {
         let descriptor = try HotKeyDescriptor.parse("Option+/")
         XCTAssertEqual(descriptor.keyCode, 44)

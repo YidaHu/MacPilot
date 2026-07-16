@@ -153,6 +153,54 @@ final class VoicePipelineTests: XCTestCase {
         XCTAssertEqual(finalState.stage, .idle)
     }
 
+    func testAbortWhileAudioStartIsSuspendedCancelsEngineThatStartsLate() async throws {
+        let audio = DelayedStartAudioCapture()
+        let pipeline = VoicePipeline(
+            audio: audio,
+            transcriber: ImmediateTranscriber(text: "raw"),
+            polisher: ImmediatePolisher(text: "polished"),
+            output: OutputRecorder(),
+            history: HistoryRecorder()
+        )
+        let startTask = Task { try await pipeline.startRecording() }
+        await audio.waitUntilStartIsSuspended()
+
+        await pipeline.abort()
+        await audio.completeStart()
+
+        do { _ = try await startTask.value; XCTFail("Expected stale completion") }
+        catch { XCTAssertEqual(error as? VoicePipelineError, .staleCompletion) }
+        let isRunning = await audio.isRunning
+        let cancelCount = await audio.cancelCount
+        XCTAssertFalse(isRunning)
+        XCTAssertEqual(cancelCount, 2)
+    }
+
+    func testNewSessionCannotReplaceAnAbortedStartThatHasNotReturnedYet() async throws {
+        let audio = DelayedStartAudioCapture()
+        let pipeline = VoicePipeline(
+            audio: audio,
+            transcriber: ImmediateTranscriber(text: "raw"),
+            polisher: ImmediatePolisher(text: "polished"),
+            output: OutputRecorder(),
+            history: HistoryRecorder()
+        )
+        let staleStart = Task { try await pipeline.startRecording() }
+        await audio.waitUntilStartIsSuspended()
+        await pipeline.abort()
+
+        do {
+            _ = try await pipeline.startRecording()
+            XCTFail("Expected the pending start to retain audio ownership")
+        } catch {
+            XCTAssertEqual(error as? VoicePipelineError, .alreadyActive)
+        }
+
+        await audio.completeStart()
+        do { _ = try await staleStart.value; XCTFail("Expected stale completion") }
+        catch { XCTAssertEqual(error as? VoicePipelineError, .staleCompletion) }
+    }
+
     private func makePipeline() -> VoicePipeline {
         VoicePipeline(
             audio: ImmediateAudioCapture(),
@@ -168,6 +216,47 @@ private struct ImmediateAudioCapture: AudioCapturing {
     func start() async throws {}
     func stop() async throws -> RecordedAudio { RecordedAudio(wavData: Data([1, 2, 3]), duration: 1) }
     func cancel() async {}
+}
+
+private actor DelayedStartAudioCapture: AudioCapturing {
+    private var continuation: CheckedContinuation<Void, Never>?
+    private var waiters: [CheckedContinuation<Void, Never>] = []
+    private var startIsSuspended = false
+    private(set) var isRunning = false
+    private(set) var cancelCount = 0
+
+    func start() async throws {
+        if startIsSuspended { throw DelayedStartProbeError.concurrentStart }
+        startIsSuspended = true
+        waiters.forEach { $0.resume() }
+        waiters.removeAll()
+        await withCheckedContinuation { continuation = $0 }
+        isRunning = true
+    }
+
+    func stop() async throws -> RecordedAudio {
+        isRunning = false
+        return RecordedAudio(wavData: Data([1, 2, 3]), duration: 1)
+    }
+
+    func cancel() async {
+        cancelCount += 1
+        isRunning = false
+    }
+
+    func waitUntilStartIsSuspended() async {
+        if startIsSuspended { return }
+        await withCheckedContinuation { waiters.append($0) }
+    }
+
+    func completeStart() {
+        continuation?.resume()
+        continuation = nil
+    }
+}
+
+private enum DelayedStartProbeError: Error {
+    case concurrentStart
 }
 
 private struct ImmediateTranscriber: Transcribing {
