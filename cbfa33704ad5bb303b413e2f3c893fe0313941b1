@@ -1,0 +1,58 @@
+Sources/MacPilotApp/FloatingVoiceCapsuleView.swift
+  manual_repair_20260716T143353Z 34
+Sources/MacPilotApp/VoiceStore.swift
+  manual_repair_20260716T143353Z 50-52,99-101,107,114,117-120,135,143,251,309,313-323,348-349,353-356,360-363,375-383,388,397,399-407,415-417,422,424,460-462,645,690
+Sources/MacPilotVoice/AVAudioCapture.swift
+  manual_repair_20260716T143353Z 4-38,40-41,44-45,57-71,74-77,79,83,85-90,97-103,123-132,134-135,138,140,143,157-168
+Sources/MacPilotVoice/GlobalHotKeyController.swift
+  manual_repair_20260716T143353Z 8-18,39,210
+Sources/MacPilotVoice/KeychainStore.swift
+  manual_repair_20260716T143353Z 16-30,37
+Sources/MacPilotVoice/VoiceOperationTracker.swift
+  manual_repair_20260716T143353Z 1-157
+Sources/MacPilotVoice/VoicePipeline.swift
+  manual_repair_20260716T143353Z 16,42-44,47,52,55-59
+Tests/MacPilotVoiceTests/AudioCaptureLifecycleTests.swift
+  manual_repair_20260716T143353Z 1-36
+Tests/MacPilotVoiceTests/GlobalHotKeyTests.swift
+  manual_repair_20260716T143353Z 5-25,32-49
+Tests/MacPilotVoiceTests/KeychainStoreTests.swift
+  manual_repair_20260716T143353Z 2,16-69
+Tests/MacPilotVoiceTests/VoiceOperationCoordinatorTests.swift
+  manual_repair_20260716T143353Z 1-132
+Tests/MacPilotVoiceTests/VoiceOperationTrackerTests.swift
+  manual_repair_20260716T143353Z 1-24
+Tests/MacPilotVoiceTests/VoicePipelineTests.swift
+  manual_repair_20260716T143353Z 156-203,221-261
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "cbfa33704ad5bb303b413e2f3c893fe0313941b1",
+  "prompts": {
+    "manual_repair_20260716T143353Z": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "manual_repair_20260716T143353Z",
+        "model": "gpt-5.4"
+      },
+      "human_author": "YidaHu",
+      "messages": [
+        {
+          "type": "user",
+          "timestamp": "2026-07-16T14:33:53Z",
+          "text": "修复录音结束进入准入和结构化生成后，误触录音按钮或快捷键会打断当前流程并丢失录音的问题；同时修复睡眠恢复退出和钥匙串重复密码提示相关问题，并推送到远程仓库。"
+        },
+        {
+          "type": "assistant",
+          "timestamp": "2026-07-16T14:33:53Z",
+          "text": "为完整语音会话增加独占状态锁，录音结束后的转录、准入、结构化生成、输出和历史保存期间禁止按钮及快捷键启动新录音，只有显式取消或真实完成才释放；隔离过期音频引擎与异步任务，修正录音启动/取消竞态；钥匙串改为原项目更新优先；补充协调器、音频生命周期、快捷键、流水线和钥匙串回归测试。"
+        }
+      ],
+      "total_additions": 740,
+      "total_deletions": 34,
+      "accepted_lines": 740,
+      "overriden_lines": 0
+    }
+  }
+}
